@@ -1,0 +1,37 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .logo-text, .logo-shape { 
+      fill: var(--foreground, #333333); 
+    }
+    .logo-stroke { 
+      stroke: var(--foreground, #333333); 
+    }
+    @media (prefers-color-scheme: dark) {
+      .logo-text, .logo-shape { 
+        fill: #ffffff; 
+      }
+      .logo-stroke { 
+        stroke: #ffffff; 
+      }
+    }
+  </style>
+  
+  <!-- Cerchio verde -->
+  <circle cx="60" cy="60" r="55" fill="none" stroke="#00FF41" stroke-width="8"/>
+  
+  <!-- Moto stilizzata -->
+  <g transform="translate(30, 45)">
+    <!-- Corpo moto -->
+    <path d="M10 20 L50 15 L55 25 L50 30 L10 25 Z" class="logo-shape"/>
+    <!-- Ruote -->
+    <circle cx="15" cy="25" r="6" fill="none" class="logo-stroke" stroke-width="2"/>
+    <circle cx="45" cy="25" r="6" fill="none" class="logo-stroke" stroke-width="2"/>
+    <!-- Pilota -->
+    <path d="M25 15 L35 10 L40 15 L35 20 Z" class="logo-shape"/>
+  </g>
+  
+  <!-- Testo MOTO SPORT -->
+  <text x="60" y="95" text-anchor="middle" class="logo-text" font-family="Arial, sans-serif" font-size="12" font-weight="bold">
+    MOTO SPORT
+  </text>
+</svg>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Fattura F001234 - Ducati SpA</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 20px; }
+        .invoice-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .invoice-table th, .invoice-table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        .invoice-table th { background-color: #f5f5f5; }
+        .total-row { font-weight: bold; background-color: #f0f8ff; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>FATTURA</h1>
+            <p><strong>Numero:</strong> F001234</p>
+            <p><strong>Data:</strong> 15 Novembre 2025</p>
+        </div>
+        <div>
+            <h3>MotoSport Racing</h3>
+            <p>Via delle Corse, 123</p>
+            <p>40127 Bologna (BO)</p>
+            <p>P.IVA: 12345678901</p>
+        </div>
+    </div>
+    
+    <div style="margin: 30px 0;">
+        <h3>Cliente:</h3>
+        <p><strong>Ducati Motor Holding SpA</strong></p>
+        <p>Via Antonio Cavalieri Ducati, 3</p>
+        <p>40132 Bologna (BO)</p>
+        <p>P.IVA: 04113870968</p>
+    </div>
+
+    <table class="invoice-table">
+        <tr>
+            <th>Descrizione</th>
+            <th>Codice</th>
+            <th>Qta</th>
+            <th>Prezzo Unit.</th>
+            <th>Totale</th>
+        </tr>
+        <tr>
+            <td>Pastiglie Freno Brembo Z04 Racing</td>
+            <td>07BB19LA</td>
+            <td>4 set</td>
+            <td>€ 285,00</td>
+            <td>€ 1.140,00</td>
+        </tr>
+        <tr>
+            <td>Dischi Freno Brembo Serie Oro</td>
+            <td>78B40870</td>
+            <td>2 pz</td>
+            <td>€ 420,50</td>
+            <td>€ 841,00</td>
+        </tr>
+        <tr>
+            <td>Kit Pomello Frizione Racing</td>
+            <td>DUC-CLU-R25</td>
+            <td>1 kit</td>
+            <td>€ 650,00</td>
+            <td>€ 650,00</td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align: right;"><strong>Subtotale:</strong></td>
+            <td><strong>€ 2.631,00</strong></td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align: right;">IVA 22%:</td>
+            <td>€ 578,82</td>
+        </tr>
+        <tr class="total-row">
+            <td colspan="4" style="text-align: right;"><strong>TOTALE:</strong></td>
+            <td><strong>€ 3.209,82</strong></td>
+        </tr>
+    </table>
+
+    <div style="margin-top: 40px;">
+        <p><strong>Pagamento:</strong> Bonifico bancario entro 30 giorni</p>
+        <p><strong>IBAN:</strong> IT60 X054 2811 1010 0000 0123456</p>
+    </div>
+</body>
+</html>

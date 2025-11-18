@@ -7,12 +7,12 @@ import { useState } from "react"
 export default function AssistenteParolePage() {
   const [maintenanceMode, setMaintenanceMode] = useState(true)
   const [formData, setFormData] = useState({
-    nomeAzienda: "ACME Inc",
+    nomeAzienda: "MotoSport",
     partitaIva: "IT12345678901",
-    emailAmministratore: "acmenc@acme3d.com",
+    emailAmministratore: "MotoSport@moto.com",
     dimensioneMaxFile: "100",
     nomeBanca: "Intesa Sanpaolo",
-    intestatarioConto: "ACME Tecno 3D S.r.l.",
+    intestatarioConto: "MotoSport S.r.l.",
     iban: "IT60X0542811101000002345",
     bicSwift: "BPMIITMXXXX"
   })

@@ -20,13 +20,16 @@ export function AppSidebar() {
       <div className="flex items-center gap-3 border-b px-4 py-4">
         <div className="flex h-10 w-10 items-center justify-center">
           <img 
-            src="/logo-fv.svg?v=1" 
-            alt="Logo" 
+            src="/logo-motosport.svg?v=2" 
+            alt="Moto Sport Logo" 
             className="h-10 w-10 object-contain"
+            style={{
+              filter: 'var(--logo-filter, none)'
+            }}
           />
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-semibold">Acme Inc.</span>
+          <span className="text-sm font-semibold">MotoSport</span>
           <span className="text-xs text-muted-foreground">Pannello Amministrazione</span>
         </div>
       </div>

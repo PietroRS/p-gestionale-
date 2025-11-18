@@ -69,8 +69,8 @@ export default function BibliotecaDatiPage() {
               </p>
             </div>
           </div>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white py-6 px-8 text-base font-semibold">
+            <Plus className="mr-2 h-5 w-5" />
             Nuovo Coupon
           </Button>
         </CardHeader>
