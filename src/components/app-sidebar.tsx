@@ -30,15 +30,15 @@ export function AppSidebar() {
       {/* Main Navigation */}
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
         <Link 
-          to="/creazione-rapida"
+          to="/"
           className={cn(
             "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative",
-            isActive("/creazione-rapida") 
+            isActive("/") 
               ? "bg-primary text-primary-foreground" 
               : "hover:bg-accent"
           )}
         >
-          {isActive("/creazione-rapida") && (
+          {isActive("/") && (
             <div className="absolute right-0 top-0 h-full w-1 bg-primary rounded-l" />
           )}
           <div className="flex items-center gap-3">
