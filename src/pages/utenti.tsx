@@ -2,7 +2,18 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, Mail, Phone, Download, Trash2, Search, X, Users, Filter, PlusCircle } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Eye, Mail, Phone, Download, Trash2, Search, X, Users, Filter, PlusCircle, AlertTriangle } from "lucide-react"
 import { useState, useEffect } from "react"
 
 interface Utente {
@@ -179,6 +190,32 @@ export default function RapportiPage() {
       newSelected.delete(id)
     }
     setSelectedIds(newSelected)
+  }
+
+  const handleDeleteUser = (userId: string) => {
+    const newUtenti = utenti.filter(u => u.id !== userId)
+    setUtenti(newUtenti)
+    saveUtenti(newUtenti)
+    
+    // Rimuovi dalla selezione se era selezionato
+    const newSelected = new Set(selectedIds)
+    newSelected.delete(userId)
+    setSelectedIds(newSelected)
+  }
+
+  const handleViewUser = (utente: Utente) => {
+    alert(`Visualizzazione utente: ${utente.nome} ${utente.cognome}\nEmail: ${utente.email}\nRuolo: ${utente.ruolo}`)
+  }
+
+  const handleDownloadUser = (utente: Utente) => {
+    const userData = `Nome: ${utente.nome} ${utente.cognome}\nEmail: ${utente.email}\nTelefono: ${utente.telefono}\nRuolo: ${utente.ruolo}\nStato: ${utente.stato}\nRegistrazione: ${utente.dataRegistrazione}`
+    const blob = new Blob([userData], { type: 'text/plain' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `utente_${utente.nome}_${utente.cognome}.txt`
+    a.click()
+    window.URL.revokeObjectURL(url)
   }
 
   return (
@@ -418,15 +455,54 @@ export default function RapportiPage() {
                   </td>
                   <td className="px-4 py-4">
                     <div className="flex justify-end gap-2">
-                      <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Visualizza">
+                      <button 
+                        className="p-1.5 rounded hover:bg-muted transition-colors" 
+                        title="Visualizza"
+                        onClick={() => handleViewUser(utente)}
+                      >
                         <Eye className="h-4 w-4 text-blue-500" />
                       </button>
-                      <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Scarica">
+                      <button 
+                        className="p-1.5 rounded hover:bg-muted transition-colors" 
+                        title="Scarica"
+                        onClick={() => handleDownloadUser(utente)}
+                      >
                         <Download className="h-4 w-4 text-green-500" />
                       </button>
-                      <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Elimina">
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button 
+                            className="p-1.5 rounded hover:bg-muted transition-colors" 
+                            title="Elimina"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="flex items-center gap-2">
+                              <AlertTriangle className="h-5 w-5 text-red-500" />
+                              Elimina Utente
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Sei sicuro di voler eliminare <strong>{utente.nome} {utente.cognome}</strong>?
+                              <br /><br />
+                              <span className="text-red-600 font-medium">
+                                Questa azione non può essere annullata.
+                              </span>
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Annulla</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDeleteUser(utente.id)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Elimina
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </td>
                 </tr>
