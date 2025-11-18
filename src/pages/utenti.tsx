@@ -2,8 +2,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, Mail, Phone, Download, Trash2, Search, X, Users, Filter } from "lucide-react"
-import { useState } from "react"
+import { Eye, Mail, Phone, Download, Trash2, Search, X, Users, Filter, PlusCircle } from "lucide-react"
+import { useState, useEffect } from "react"
 
 interface Utente {
   id: string
@@ -80,7 +80,30 @@ const getStatoBadge = (stato: string) => {
 }
 
 export default function RapportiPage() {
-  const [utenti, setUtenti] = useState<Utente[]>(utentiIniziali)
+  // Funzione per caricare utenti dal localStorage
+  const loadUtenti = () => {
+    const saved = localStorage.getItem('gestionale-utenti')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch (error) {
+        console.error('Errore nel caricamento utenti:', error)
+        return utentiIniziali
+      }
+    }
+    return utentiIniziali
+  }
+
+  // Funzione per salvare utenti nel localStorage
+  const saveUtenti = (newUtenti: Utente[]) => {
+    try {
+      localStorage.setItem('gestionale-utenti', JSON.stringify(newUtenti))
+    } catch (error) {
+      console.error('Errore nel salvataggio utenti:', error)
+    }
+  }
+
+  const [utenti, setUtenti] = useState<Utente[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [showForm, setShowForm] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -91,6 +114,12 @@ export default function RapportiPage() {
     telefono: "",
     ruolo: "Operatore"
   })
+
+  // Carica utenti all'avvio del componente
+  useEffect(() => {
+    const loadedUtenti = loadUtenti()
+    setUtenti(loadedUtenti)
+  }, [])
   
   const filteredUtenti = utenti.filter(utente => 
     utente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -113,7 +142,10 @@ export default function RapportiPage() {
       dataRegistrazione: new Date().toLocaleDateString('it-IT')
     }
 
-    setUtenti([...utenti, nuovoUtente])
+    const newUtenti = [...utenti, nuovoUtente]
+    setUtenti(newUtenti)
+    saveUtenti(newUtenti) // Salva nel localStorage
+    
     setFormData({
       nome: "",
       cognome: "",
@@ -163,7 +195,16 @@ export default function RapportiPage() {
               <p className="text-sm text-muted-foreground">Gestisci gli utenti che hanno accesso al gestionale</p>
             </div>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">Aggiorna</Button>
+          <div className="flex items-center gap-3">
+            <Button 
+              onClick={() => setShowForm(true)}
+              className="bg-green-600 hover:bg-green-700 gap-2 px-6 py-3 rounded-full font-semibold"
+            >
+              <PlusCircle className="h-4 w-4" />
+              Nuovo Utente
+            </Button>
+            <Button className="bg-blue-600 hover:bg-blue-700">Aggiorna</Button>
+          </div>
         </CardHeader>
       </Card>
 
