@@ -96,7 +96,7 @@ export function GenericTable<T extends BaseTableData>({ config }: GenericTablePr
             <Filter className="h-4 w-4" />
             Tutti gli stati
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">
             Aggiorna
           </Button>
         </div>

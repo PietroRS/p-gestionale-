@@ -117,7 +117,7 @@ export default function SquadraPage() {
               <p className="text-sm text-muted-foreground">Gestisci tecnologie di stampa e materiali disponibili</p>
             </div>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">
             <Plus className="mr-2 h-4 w-4" />
             Aggiungi Nuovo
           </Button>
