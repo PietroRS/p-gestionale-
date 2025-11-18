@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <!-- Cerchio di sfondo blu scuro -->
+  <circle cx="200" cy="200" r="200" fill="#002855"/>
+  
+  <!-- Arco superiore dorato -->
+  <path d="M 120 100 Q 200 80 280 100" stroke="#C9A961" stroke-width="8" fill="none" stroke-linecap="round"/>
+  
+  <!-- Lettera F stilizzata -->
+  <g fill="#C9A961">
+    <!-- Barra verticale sinistra della F -->
+    <path d="M 120 150 L 150 150 L 150 320 L 120 320 Z"/>
+    
+    <!-- Barra orizzontale superiore della F -->
+    <path d="M 120 150 L 280 150 L 280 180 L 150 180 Z"/>
+    
+    <!-- Barra orizzontale centrale della F -->
+    <path d="M 150 220 L 240 220 L 240 250 L 150 250 Z"/>
+  </g>
+  
+  <!-- Lettera V stilizzata -->
+  <g fill="#C9A961">
+    <!-- Barra sinistra della V -->
+    <path d="M 190 150 L 220 150 L 250 320 L 215 320 Z"/>
+    
+    <!-- Barra destra della V -->
+    <path d="M 250 150 L 280 150 L 300 320 L 265 320 Z"/>
+  </g>
+  
+  <!-- Cerchio esterno decorativo -->
+  <circle cx="200" cy="200" r="195" stroke="#C9A961" stroke-width="3" fill="none" opacity="0.6"/>
+  
+  <!-- Bordo bianco sottile per contrasto su sfondo chiaro -->
+  <circle cx="200" cy="200" r="199" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+</svg>

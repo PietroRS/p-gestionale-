@@ -83,6 +83,7 @@ export default function RapportiPage() {
   const [utenti, setUtenti] = useState<Utente[]>(utentiIniziali)
   const [searchTerm, setSearchTerm] = useState("")
   const [showForm, setShowForm] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [formData, setFormData] = useState({
     nome: "",
     cognome: "",
@@ -128,6 +129,24 @@ export default function RapportiPage() {
       ...formData,
       [e.target.name]: e.target.value
     })
+  }
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(filteredUtenti.map(u => u.id)))
+    } else {
+      setSelectedIds(new Set())
+    }
+  }
+
+  const handleSelectRow = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedIds)
+    if (checked) {
+      newSelected.add(id)
+    } else {
+      newSelected.delete(id)
+    }
+    setSelectedIds(newSelected)
   }
 
   return (
@@ -295,6 +314,8 @@ export default function RapportiPage() {
                   <input
                     type="checkbox"
                     className="h-4 w-4 rounded border-gray-300 cursor-pointer"
+                    checked={selectedIds.size === filteredUtenti.length && filteredUtenti.length > 0}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
                   />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">ID</th>
@@ -310,12 +331,16 @@ export default function RapportiPage() {
               {filteredUtenti.map((utente) => (
                 <tr 
                   key={utente.id} 
-                  className="border-b transition-colors hover:bg-muted/30"
+                  className={`border-b transition-colors hover:bg-muted/30 ${
+                    selectedIds.has(utente.id) ? 'bg-muted/50' : ''
+                  }`}
                 >
                   <td className="px-4 py-4">
                     <input
                       type="checkbox"
                       className="h-4 w-4 rounded border-gray-300 cursor-pointer"
+                      checked={selectedIds.has(utente.id)}
+                      onChange={(e) => handleSelectRow(utente.id, e.target.checked)}
                     />
                   </td>
                   <td className="px-4 py-4">

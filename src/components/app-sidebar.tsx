@@ -18,8 +18,12 @@ export function AppSidebar() {
     <aside className="flex h-screen w-64 flex-col border-r bg-card">
       {/* Header */}
       <div className="flex items-center gap-3 border-b px-4 py-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-red-600">
-          <Rocket className="h-5 w-5 text-white rotate-45" />
+        <div className="flex h-10 w-10 items-center justify-center">
+          <img 
+            src="/logo-fv.svg?v=1" 
+            alt="Logo" 
+            className="h-10 w-10 object-contain"
+          />
         </div>
         <div className="flex flex-col">
           <span className="text-sm font-semibold">Acme Inc.</span>
