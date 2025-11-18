@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, Mail, Phone, MoreHorizontal, Search, X, Users } from "lucide-react"
+import { Eye, Mail, Phone, Download, Trash2, Search, X, Users, Filter } from "lucide-react"
 import { useState } from "react"
 
 interface Utente {
@@ -266,8 +266,8 @@ export default function RapportiPage() {
       </div>
 
       {/* Search Bar */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-lg border bg-card p-4">
-        <div className="relative flex-1 max-w-sm">
+      <div className="flex items-center justify-between gap-4 rounded-lg border bg-card p-4 bg-muted/30">
+        <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input 
             placeholder="Cerca utenti per nome, email o ID..." 
@@ -276,6 +276,13 @@ export default function RapportiPage() {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
           />
         </div>
+        <Button variant="outline" size="default" className="gap-2">
+          <Filter className="h-4 w-4" />
+          Tutti gli stati
+        </Button>
+        <Button className="bg-blue-600 hover:bg-blue-700">
+          Aggiorna
+        </Button>
       </div>
 
       {/* Table */}
@@ -283,26 +290,38 @@ export default function RapportiPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">ID</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Utente</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Contatti</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Ruolo</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Stato</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Registrazione</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider">Azioni</th>
+              <tr className="border-b bg-muted/30">
+                <th className="px-4 py-3 w-12">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 cursor-pointer"
+                  />
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">ID</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Utente</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Contatti</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Ruolo</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Stato</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Registrazione</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">Azioni</th>
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody>
               {filteredUtenti.map((utente) => (
                 <tr 
                   key={utente.id} 
-                  className="transition-colors hover:bg-muted/50"
+                  className="border-b transition-colors hover:bg-muted/30"
                 >
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-4">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300 cursor-pointer"
+                    />
+                  </td>
+                  <td className="px-4 py-4">
                     <div className="font-mono text-sm font-medium">{utente.id}</div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-600 text-sm font-semibold text-white">
                         {utente.nome[0]}{utente.cognome[0]}
@@ -316,29 +335,32 @@ export default function RapportiPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-4">
                     <div className="text-sm text-muted-foreground flex items-center gap-1">
                       <Phone className="h-3 w-3" />
                       {utente.telefono}
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-4">
                     {getRuoloBadge(utente.ruolo)}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-4">
                     {getStatoBadge(utente.stato)}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-4">
                     <div className="text-sm text-muted-foreground">{utente.dataRegistrazione}</div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-center gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" title="Visualizza dettagli">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" title="Altre azioni">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                  <td className="px-4 py-4">
+                    <div className="flex justify-end gap-2">
+                      <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Visualizza">
+                        <Eye className="h-4 w-4 text-blue-500" />
+                      </button>
+                      <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Scarica">
+                        <Download className="h-4 w-4 text-green-500" />
+                      </button>
+                      <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Elimina">
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </button>
                     </div>
                   </td>
                 </tr>

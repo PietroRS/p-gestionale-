@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, MoreHorizontal, Package } from "lucide-react"
+import { Eye, Download, Trash2, Package } from "lucide-react"
 import { GenericTable } from "@/components/ui/table-generic"
 import { ordiniData } from "@/data/ordini.data"
 import type { Ordine } from "@/types/ordine.types"
@@ -112,14 +112,20 @@ export default function PannelloControlloPage() {
     actions: [
       {
         label: 'Visualizza dettagli',
-        icon: <Eye className="h-4 w-4" />,
+        icon: <Eye className="h-4 w-4 text-blue-500" />,
         onClick: (row) => console.log('Visualizza', row),
         variant: 'ghost'
       },
       {
-        label: 'Altre azioni',
-        icon: <MoreHorizontal className="h-4 w-4" />,
-        onClick: (row) => console.log('Altre azioni', row),
+        label: 'Scarica',
+        icon: <Download className="h-4 w-4 text-green-500" />,
+        onClick: (row) => console.log('Download', row),
+        variant: 'ghost'
+      },
+      {
+        label: 'Elimina',
+        icon: <Trash2 className="h-4 w-4 text-red-500" />,
+        onClick: (row) => console.log('Elimina', row),
         variant: 'ghost'
       }
     ],

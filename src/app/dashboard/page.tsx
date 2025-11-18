@@ -2,7 +2,7 @@ import { SectionCard } from "@/components/section-cards"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { data } from "@/data.json"
-import { DollarSign, Package, Users, FileText, Eye, MoreHorizontal } from "lucide-react"
+import { DollarSign, Package, Users, FileText, Eye, Download, Trash2 } from "lucide-react"
 
 export default function DashboardPage() {
   const ordiniRecenti = [
@@ -116,40 +116,55 @@ export default function DashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left py-3 px-4 font-medium text-sm">ORDINE</th>
-                  <th className="text-left py-3 px-4 font-medium text-sm">CLIENTE</th>
-                  <th className="text-left py-3 px-4 font-medium text-sm">STATO</th>
-                  <th className="text-left py-3 px-4 font-medium text-sm">QUANTITÀ</th>
-                  <th className="text-left py-3 px-4 font-medium text-sm">TOTALE</th>
-                  <th className="text-left py-3 px-4 font-medium text-sm">DATA</th>
-                  <th className="text-left py-3 px-4 font-medium text-sm"></th>
+                <tr className="border-b bg-muted/30">
+                  <th className="px-4 py-3 w-12">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300 cursor-pointer"
+                    />
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">ORDINE</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">CLIENTE</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">STATO</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">QUANTITÀ</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">TOTALE</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">DATA</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">AZIONI</th>
                 </tr>
               </thead>
               <tbody>
                 {ordiniRecenti.map((ordine, index) => (
-                  <tr key={index} className="border-b hover:bg-muted/50">
-                    <td className="py-4 px-4">
+                  <tr key={index} className="border-b hover:bg-muted/30 transition-colors">
+                    <td className="px-4 py-4">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300 cursor-pointer"
+                      />
+                    </td>
+                    <td className="px-4 py-4">
                       <div className="text-sm font-medium">{ordine.id}</div>
                       <div className="text-xs text-muted-foreground">{ordine.hash}</div>
                     </td>
-                    <td className="py-4 px-4 text-sm">{ordine.cliente}</td>
-                    <td className="py-4 px-4">
+                    <td className="px-4 py-4 text-sm">{ordine.cliente}</td>
+                    <td className="px-4 py-4">
                       <span className="inline-flex items-center rounded-full bg-green-500/10 px-3 py-1 text-xs font-medium text-green-600 dark:text-green-400">
                         {ordine.stato}
                       </span>
                     </td>
-                    <td className="py-4 px-4 text-sm">{ordine.quantita}</td>
-                    <td className="py-4 px-4 text-sm font-medium">{ordine.totale}</td>
-                    <td className="py-4 px-4 text-sm text-muted-foreground">{ordine.data}</td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
+                    <td className="px-4 py-4 text-sm">{ordine.quantita}</td>
+                    <td className="px-4 py-4 text-sm font-medium">{ordine.totale}</td>
+                    <td className="px-4 py-4 text-sm text-muted-foreground">{ordine.data}</td>
+                    <td className="px-4 py-4">
+                      <div className="flex justify-end gap-2">
+                        <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Visualizza">
+                          <Eye className="h-4 w-4 text-blue-500" />
+                        </button>
+                        <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Scarica">
+                          <Download className="h-4 w-4 text-green-500" />
+                        </button>
+                        <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Elimina">
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </button>
                       </div>
                     </td>
                   </tr>
