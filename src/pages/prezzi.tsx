@@ -158,7 +158,7 @@ export default function PrezziPage() {
               <TrendingUp className="h-6 w-6 text-white" />
             </div>
             <div>
-              <CardTitle className="text-2xl">Gestione Prezzi Avanzata</CardTitle>
+              <CardTitle className="text-2xl">Prezzi</CardTitle>
               <p className="text-sm text-muted-foreground">Sistema completo per pricing, promozioni e analytics per articoli moto</p>
             </div>
           </div>

@@ -49,7 +49,7 @@ export default function DashboardPage() {
               <p className="text-sm text-muted-foreground">Panoramica generale del sistema XYZ</p>
             </div>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">Aggiorna</Button>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">Aggiorna</Button>
         </CardHeader>
       </Card>
 

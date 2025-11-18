@@ -1,7 +1,7 @@
 import { Bell, Moon, Sun, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 
 export function SiteHeader() {
   const [isDark, setIsDark] = useState(false)
@@ -9,6 +9,23 @@ export function SiteHeader() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    // Prefer saved preference in localStorage, otherwise fall back to existing class
+    try {
+      const saved = localStorage.getItem('theme')
+      if (saved === 'dark') {
+        document.documentElement.classList.add('dark')
+        setIsDark(true)
+        return
+      }
+      if (saved === 'light') {
+        document.documentElement.classList.remove('dark')
+        setIsDark(false)
+        return
+      }
+    } catch (e) {
+      // ignore localStorage errors (e.g., privacy mode)
+    }
+
     const isDarkMode = document.documentElement.classList.contains('dark')
     setIsDark(isDarkMode)
   }, [])
@@ -17,9 +34,11 @@ export function SiteHeader() {
     if (isDark) {
       document.documentElement.classList.remove('dark')
       setIsDark(false)
+      try { localStorage.setItem('theme', 'light') } catch (e) {}
     } else {
       document.documentElement.classList.add('dark')
       setIsDark(true)
+      try { localStorage.setItem('theme', 'dark') } catch (e) {}
     }
   }
 
@@ -32,10 +51,35 @@ export function SiteHeader() {
     navigate("/login")
   }
 
+  const { pathname } = useLocation()
+
+  const pathTitles: Record<string, string> = {
+    "/": "Dashboard",
+    "/creazione-rapida": "Creazione rapida",
+    "/pannello-controllo": "Ordini",
+    "/ciclo-vitale": "File",
+    "/analisi": "Prezzi",
+    "/progetti": "Progetti",
+    "/squadra": "Squadra",
+    "/biblioteca-dati": "Biblioteca dati",
+    "/rapporti": "Rapporti",
+    "/assistente-parole": "Assistente parole",
+    "/file": "File",
+  }
+
+  const formatSegment = (seg: string) =>
+    seg
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+
+  const title =
+    pathTitles[pathname] ||
+    (pathname.split("/").filter(Boolean).pop() ? formatSegment(pathname.split("/").filter(Boolean).pop() as string) : "Dashboard")
+
   return (
     <header className="flex h-14 items-center justify-between border-b bg-card px-6">
       <div className="flex items-center gap-4">
-        <h1 className="text-lg font-semibold">Documenti</h1>
+        <h1 className="text-lg font-semibold">{title}</h1>
       </div>
       <div className="flex items-center gap-4 relative">
         <Button variant="outline" size="icon" onClick={toggleTheme} className="rounded-full border-2 border-cyan-400">

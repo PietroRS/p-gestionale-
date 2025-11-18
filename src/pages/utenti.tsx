@@ -235,12 +235,12 @@ export default function RapportiPage() {
           <div className="flex items-center gap-3">
             <Button 
               onClick={() => setShowForm(true)}
-              className="bg-green-600 hover:bg-green-700 gap-2 px-6 py-3 rounded-full font-semibold"
+              className="bg-green-600 hover:bg-green-700 text-white gap-2 px-6 py-3 rounded-full font-semibold transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg"
             >
               <PlusCircle className="h-4 w-4" />
               Nuovo Utente
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700">Aggiorna</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">Aggiorna</Button>
           </div>
         </CardHeader>
       </Card>
@@ -377,7 +377,7 @@ export default function RapportiPage() {
           <Filter className="h-4 w-4" />
           Tutti gli stati
         </Button>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <Button className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">
           Aggiorna
         </Button>
       </div>

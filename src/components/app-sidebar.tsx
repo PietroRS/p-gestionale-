@@ -39,9 +39,9 @@ export function AppSidebar() {
         <Link 
           to="/"
           className={cn(
-            "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative",
+            "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg text-white",
             isActive("/") 
-              ? "bg-primary text-primary-foreground" 
+              ? "bg-primary text-primary-foreground text-white" 
               : "hover:bg-accent"
           )}
         >

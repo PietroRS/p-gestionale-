@@ -317,7 +317,7 @@ export default function FilePage() {
               <FileIcon className="h-6 w-6 text-white" />
             </div>
             <div>
-              <CardTitle className="text-2xl">Gestione File</CardTitle>
+              <CardTitle className="text-2xl">File</CardTitle>
               <p className="text-sm text-muted-foreground">Organizza documenti, schede tecniche e certificazioni per articoli moto</p>
             </div>
           </div>
