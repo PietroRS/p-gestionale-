@@ -1,4 +1,4 @@
-import { Bell, Moon, Sun, LogOut } from "lucide-react"
+import { Bell, Moon, Sun, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
@@ -109,8 +109,8 @@ export function SiteHeader() {
             </div>
           )}
         </div>
-        <Button variant="ghost" size="icon" onClick={handleLogout} title="Esci">
-          <LogOut className="h-5 w-5" />
+        <Button variant="outline" size="icon" onClick={handleLogout} title="Esci" className="rounded-full border-2 border-cyan-400">
+          <User className="h-5 w-5 text-yellow-500" />
         </Button>
       </div>
     </header>
