@@ -1,19 +1,8 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Eye, Mail, Phone, Download, Trash2, Search, X, Users, Filter, PlusCircle, AlertTriangle } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Eye, Mail, Phone, Download, Trash2, Search, X, Users, Filter, PlusCircle } from "lucide-react"
 import { useState, useEffect } from "react"
 
 interface Utente {
@@ -203,6 +192,48 @@ export default function UtentiPage() {
     setSelectedIds(newSelected)
   }
 
+  // Delete modal state and form
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [deletingUser, setDeletingUser] = useState<Utente | null>(null)
+  const [deleteFormData, setDeleteFormData] = useState({
+    motivo: "",
+    reassignTo: "",
+    notifyByEmail: true,
+  })
+
+  // detect dark mode and update on class changes to documentElement
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false)
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const root = document.documentElement
+    const update = () => setIsDarkMode(root.classList.contains('dark'))
+    update()
+    const obs = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'attributes' && (m as any).attributeName === 'class') {
+          update()
+        }
+      }
+    })
+    obs.observe(root, { attributes: true })
+    return () => obs.disconnect()
+  }, [])
+
+  const openDeleteModal = (utente: Utente) => {
+    setDeletingUser(utente)
+    setDeleteFormData({ motivo: "", reassignTo: "", notifyByEmail: true })
+    setDeleteModalOpen(true)
+  }
+
+  const handleConfirmDelete = () => {
+    if (!deletingUser) return
+    // Here you could send the delete reason / reassign info to the server
+    console.log('Eliminazione utente:', deletingUser.id, deleteFormData)
+    handleDeleteUser(deletingUser.id)
+    setDeleteModalOpen(false)
+    setDeletingUser(null)
+  }
+
   const handleViewUser = (utente: Utente) => {
     alert(`Visualizzazione utente: ${utente.nome} ${utente.cognome}\nEmail: ${utente.email}\nRuolo: ${utente.ruolo}`)
   }
@@ -245,95 +276,111 @@ export default function UtentiPage() {
         </CardHeader>
       </Card>
 
-      {/* Form Nuovo Utente */}
+      {/* Form Nuovo Utente as modal popup */}
       {showForm && (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Nuovo Utente</CardTitle>
-                <CardDescription>Compila i campi per aggiungere un nuovo utente</CardDescription>
-              </div>
-              <Button variant="ghost" size="icon" onClick={() => setShowForm(false)}>
-                <X className="h-4 w-4" />
-              </Button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className={isDarkMode ? "absolute inset-0 bg-black/30" : "absolute inset-0 bg-black/20"}
+            onClick={() => setShowForm(false)}
+          />
+          <div className="relative w-full max-w-lg mx-4">
+            <div
+              style={isDarkMode ? { backgroundColor: '#000', color: '#fff' } : undefined}
+              className="max-w-lg rounded-lg border bg-white dark:!bg-black text-gray-900 dark:text-white shadow-sm border-gray-200 dark:border-gray-800"
+            >
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Nuovo Utente</CardTitle>
+                    <CardDescription>Compila i campi per aggiungere un nuovo utente</CardDescription>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setShowForm(false)}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Nome *</label>
+                      <Input 
+                        name="nome"
+                        placeholder="Inserisci il nome" 
+                        value={formData.nome}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full bg-white dark:bg-black text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Cognome *</label>
+                      <Input 
+                        name="cognome"
+                        placeholder="Inserisci il cognome" 
+                        value={formData.cognome}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full bg-white dark:bg-black text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Email *</label>
+                      <Input 
+                        name="email"
+                        type="email"
+                        placeholder="email@esempio.it" 
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full bg-white dark:bg-black text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Telefono *</label>
+                      <Input 
+                        name="telefono"
+                        placeholder="+39 123 4567890" 
+                        value={formData.telefono}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full bg-white dark:bg-black text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Ruolo *</label>
+                    <select 
+                      name="ruolo"
+                      value={formData.ruolo}
+                      onChange={handleInputChange}
+                      className="flex h-10 w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-black px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+                      required
+                    >
+                      <option value="Operatore">Operatore</option>
+                      <option value="Manager">Manager</option>
+                      <option value="Amministratore">Amministratore</option>
+                    </select>
+                  </div>
+
+                  <div className="flex gap-2 justify-end">
+                    <Button type="button" className="bg-red-600 hover:bg-red-700 text-white" onClick={() => setShowForm(false)}>
+                        Annulla
+                      </Button>
+                    <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
+                      Salva Utente
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
             </div>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Nome *</label>
-                  <Input 
-                    name="nome"
-                    placeholder="Inserisci il nome" 
-                    value={formData.nome}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Cognome *</label>
-                  <Input 
-                    name="cognome"
-                    placeholder="Inserisci il cognome" 
-                    value={formData.cognome}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Email *</label>
-                  <Input 
-                    name="email"
-                    type="email"
-                    placeholder="email@esempio.it" 
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Telefono *</label>
-                  <Input 
-                    name="telefono"
-                    placeholder="+39 123 4567890" 
-                    value={formData.telefono}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Ruolo *</label>
-                <select 
-                  name="ruolo"
-                  value={formData.ruolo}
-                  onChange={handleInputChange}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  required
-                >
-                  <option value="Operatore">Operatore</option>
-                  <option value="Manager">Manager</option>
-                  <option value="Amministratore">Amministratore</option>
-                </select>
-              </div>
-
-              <div className="flex gap-2 justify-end">
-                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                  Annulla
-                </Button>
-                <Button type="submit">
-                  Salva Utente
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Stats Cards */}
@@ -361,6 +408,45 @@ export default function UtentiPage() {
           </div>
         </div>
       </div>
+      {/* Delete User Modal (uses Card for consistent app styling) */}
+      {deleteModalOpen && deletingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className={isDarkMode ? "absolute inset-0 bg-black/30" : "absolute inset-0 bg-black/20"}
+            onClick={() => { setDeleteModalOpen(false); setDeletingUser(null); }}
+          />
+          <div className="relative w-full max-w-md mx-4">
+            <div
+              style={isDarkMode ? { backgroundColor: '#000', color: '#fff' } : undefined}
+              className="max-w-md rounded-lg border bg-white dark:!bg-black text-gray-900 dark:text-white shadow-sm border-gray-200 dark:border-gray-800"
+            >
+              <CardHeader>
+                <CardTitle>Elimina Utente</CardTitle>
+                <CardDescription>Sei sicuro di voler eliminare <strong>{deletingUser.nome} {deletingUser.cognome}</strong>?</CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Questa azione non può essere annullata.</p>
+              </CardContent>
+
+                <CardFooter className="justify-end gap-3">
+                <button
+                  onClick={() => { setDeleteModalOpen(false); setDeletingUser(null) }}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                >
+                  Annulla
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="px-4 py-2 text-white rounded-lg bg-red-600 hover:bg-red-700 transition-colors"
+                >
+                  Elimina
+                </button>
+              </CardFooter>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Search Bar */}
       <div className="flex items-center justify-between gap-4 rounded-lg border bg-card p-4 bg-muted/30">
@@ -469,40 +555,13 @@ export default function UtentiPage() {
                       >
                         <Download className="h-4 w-4 text-green-500" />
                       </button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <button 
-                            className="p-1.5 rounded hover:bg-muted transition-colors" 
-                            title="Elimina"
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle className="flex items-center gap-2">
-                              <AlertTriangle className="h-5 w-5 text-red-500" />
-                              Elimina Utente
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Sei sicuro di voler eliminare <strong>{utente.nome} {utente.cognome}</strong>?
-                              <br /><br />
-                              <span className="text-red-600 font-medium">
-                                Questa azione non può essere annullata.
-                              </span>
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annulla</AlertDialogCancel>
-                            <AlertDialogAction 
-                              onClick={() => handleDeleteUser(utente.id)}
-                              className="bg-red-600 hover:bg-red-700"
-                            >
-                              Elimina
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <button
+                        className="p-1.5 rounded hover:bg-muted transition-colors"
+                        title="Elimina"
+                        onClick={() => openDeleteModal(utente)}
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </button>
                     </div>
                   </td>
                 </tr>

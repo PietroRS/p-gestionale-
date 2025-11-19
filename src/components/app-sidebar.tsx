@@ -40,9 +40,9 @@ export function AppSidebar() {
         <Link 
           to="/"
           className={cn(
-            "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative text-white",
+            "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative",
             isActive("/") 
-              ? "bg-primary text-primary-foreground text-white" 
+              ? "bg-primary text-primary-foreground" 
               : "hover:bg-accent"
           )}
         >

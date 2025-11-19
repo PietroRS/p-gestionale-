@@ -1,6 +1,7 @@
 import { SectionCard } from "@/components/section-cards"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react"
 import { data } from "@/data.json"
 import { DollarSign, Package, Users, FileText, Eye, Download, Trash2 } from "lucide-react"
 
@@ -35,6 +36,24 @@ export default function DashboardPage() {
     }
   ]
 
+  const [ordini, setOrdini] = useState(ordiniRecenti)
+
+  // delete modal state for dashboard items
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [deletingItem, setDeletingItem] = useState<any | null>(null)
+
+  const openDeleteModal = (item: any) => {
+    setDeletingItem(item)
+    setDeleteModalOpen(true)
+  }
+
+  const handleConfirmDelete = () => {
+    if (!deletingItem) return
+    setOrdini(prev => prev.filter(o => o.id !== deletingItem.id))
+    setDeleteModalOpen(false)
+    setDeletingItem(null)
+  }
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -52,6 +71,41 @@ export default function DashboardPage() {
           <Button className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">Aggiorna</Button>
         </CardHeader>
       </Card>
+
+      {/* Delete confirmation modal for dashboard items */}
+      {deleteModalOpen && deletingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/20 dark:bg-black/30"
+            onClick={() => { setDeleteModalOpen(false); setDeletingItem(null); }}
+          />
+          <div className="relative w-full max-w-md mx-4">
+            <div
+              className="max-w-md rounded-lg border shadow-sm border-gray-200 dark:border-transparent"
+              style={{ backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--card-foreground))' }}
+            >
+              <div className="p-6">
+                <h3 className="text-lg font-semibold">Elimina elemento</h3>
+                <p className="text-sm text-muted-foreground mt-2">Sei sicuro di voler eliminare <strong>{deletingItem.id}</strong>?</p>
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    onClick={() => { setDeleteModalOpen(false); setDeletingItem(null) }}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                  >
+                    Annulla
+                  </button>
+                  <button
+                    onClick={handleConfirmDelete}
+                    className="px-4 py-2 text-white rounded-lg bg-red-600 hover:bg-red-700 transition-colors"
+                  >
+                    Elimina
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats Cards Prima Riga */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -133,7 +187,7 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {ordiniRecenti.map((ordine, index) => (
+                {ordini.map((ordine, index) => (
                   <tr key={index} className="border-b hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-4">
                       <input
@@ -162,7 +216,7 @@ export default function DashboardPage() {
                         <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Scarica">
                           <Download className="h-4 w-4 text-green-500" />
                         </button>
-                        <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Elimina">
+                        <button className="p-1.5 rounded hover:bg-muted transition-colors" title="Elimina" onClick={() => openDeleteModal(ordine)}>
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </button>
                       </div>
