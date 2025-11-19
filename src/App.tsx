@@ -4,7 +4,6 @@ import { SiteHeader } from './components/site-header'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import LoginPage from './pages/login'
 import DashboardPage from './app/dashboard/page'
-import CreazioneRapidaPage from './pages/dashboard'
 import FilePage from './pages/file'
 import PrezziPage from './pages/prezzi' 
 import SpedizioniPage from './pages/spedizioni'
@@ -47,16 +46,7 @@ function App() {
           }
         />
         
-        <Route
-          path="/creazione-rapida"
-          element={
-            <ProtectedRoute>
-              <AppLayout>
-                <CreazioneRapidaPage />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
+        
         
         <Route
           path="/ordini"

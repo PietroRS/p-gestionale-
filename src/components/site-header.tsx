@@ -55,7 +55,6 @@ export function SiteHeader() {
 
   const pathTitles: Record<string, string> = {
     "/": "Dashboard",
-    "/creazione-rapida": "Creazione rapida",
     "/ordini": "Ordini",
     "/file": "File",
     "/prezzi": "Prezzi",
