@@ -369,7 +369,7 @@ export default function UtentiPage() {
                   </div>
 
                   <div className="flex gap-2 justify-end">
-                    <Button type="button" className="bg-red-600 hover:bg-red-700 text-white" onClick={() => setShowForm(false)}>
+                    <Button type="button" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setShowForm(false)}>
                         Annulla
                       </Button>
                     <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -432,7 +432,7 @@ export default function UtentiPage() {
                 <CardFooter className="justify-end gap-3">
                 <button
                   onClick={() => { setDeleteModalOpen(false); setDeletingUser(null) }}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                 >
                   Annulla
                 </button>

@@ -20,12 +20,12 @@ export function AppSidebar() {
       {/* Header */}
       <div className="flex items-center gap-3 border-b px-4 py-4">
         <div className="flex h-10 w-10 items-center justify-center">
-          <img 
-            src="/logo-motosport.svg?v=2" 
-            alt="Moto Sport Logo" 
+          <img
+            src="/logo-motosport.svg"
+            alt="Moto Sport Logo"
             className="h-10 w-10 object-contain"
             style={{
-              filter: 'var(--logo-filter, none)'
+              filter: 'none'
             }}
           />
         </div>
