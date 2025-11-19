@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Search, ChevronLeft, ChevronRight, Filter } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Filter, ChevronDown } from 'lucide-react'
 import type { TableConfig, BaseTableData } from '@/types/table.types'
 import { cn } from '@/lib/utils'
 
@@ -25,19 +25,36 @@ export function GenericTable<T extends BaseTableData>({ config }: GenericTablePr
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedRows, setSelectedRows] = useState<Set<string | number>>(new Set())
+  const [stateFilter, setStateFilter] = useState<string | null>(null)
+  const [showStateMenu, setShowStateMenu] = useState(false)
+  const stateMenuRef = useRef<HTMLDivElement | null>(null)
 
   // Filtro dei dati in base alla ricerca
   const filteredData = useMemo(() => {
-    if (!searchable || !searchTerm) return data
+    let result = data
 
-    return data.filter((row) => {
-      return searchKeys.some((key) => {
-        const value = row[key]
-        if (value === null || value === undefined) return false
-        return String(value).toLowerCase().includes(searchTerm.toLowerCase())
+    // apply search
+    if (searchable && searchTerm) {
+      result = result.filter((row) => {
+        return searchKeys.some((key) => {
+          const value = row[key]
+          if (value === null || value === undefined) return false
+          return String(value).toLowerCase().includes(searchTerm.toLowerCase())
+        })
       })
-    })
-  }, [data, searchTerm, searchKeys, searchable])
+    }
+
+    // apply state filter if present (common property name 'stato')
+    if (stateFilter) {
+      result = result.filter((row) => {
+        const val = (row as any)['stato']
+        if (val === null || val === undefined) return false
+        return String(val) === stateFilter
+      })
+    }
+
+    return result
+  }, [data, searchTerm, searchKeys, searchable, stateFilter])
 
   // Paginazione
   const paginatedData = useMemo(() => {
@@ -55,6 +72,28 @@ export function GenericTable<T extends BaseTableData>({ config }: GenericTablePr
   const getNestedValue = (obj: any, path: string): any => {
     return path.split('.').reduce((current, key) => current?.[key], obj)
   }
+
+  // derive unique states from data for filter menu
+  const uniqueStates = useMemo(() => {
+    const s = new Set<string>()
+    data.forEach((row) => {
+      const val = (row as any)['stato']
+      if (val !== undefined && val !== null) s.add(String(val))
+    })
+    return Array.from(s)
+  }, [data])
+
+  // close menu on outside click
+  useEffect(() => {
+    const onDocClick = (e: MouseEvent) => {
+      if (!stateMenuRef.current) return
+      if (!stateMenuRef.current.contains(e.target as Node)) {
+        setShowStateMenu(false)
+      }
+    }
+    if (showStateMenu) document.addEventListener('click', onDocClick)
+    return () => document.removeEventListener('click', onDocClick)
+  }, [showStateMenu])
 
   // Gestione selezione
   const toggleSelectAll = () => {
@@ -92,13 +131,52 @@ export function GenericTable<T extends BaseTableData>({ config }: GenericTablePr
               className="flex h-10 w-full rounded-lg border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
-          <Button variant="outline" size="default" className="gap-2">
-            <Filter className="h-4 w-4" />
-            Tutti gli stati
-          </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">
-            Aggiorna
-          </Button>
+          <div className="relative" ref={stateMenuRef}>
+            <Button
+              variant="outline"
+              size="default"
+              className="gap-2 flex items-center"
+              onClick={() => setShowStateMenu((s) => !s)}
+              aria-haspopup="menu"
+              aria-expanded={showStateMenu}
+            >
+              <Filter className="h-4 w-4" />
+              <span className="truncate max-w-[140px]">{stateFilter ?? 'Tutti gli stati'}</span>
+              <ChevronDown className={"h-4 w-4 ml-1 transition-transform " + (showStateMenu ? 'rotate-180' : '')} />
+            </Button>
+
+            {showStateMenu && (
+              <div className="absolute right-0 mt-2 w-56 z-50 rounded-md border bg-card/95 p-1 shadow-2xl ring-1 ring-black/20 backdrop-blur-sm overflow-hidden">
+                <div className="px-2 py-2 text-xs text-muted-foreground font-medium">Filtra per stato</div>
+                <div className="h-px bg-muted/50 my-1" />
+                <button
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-muted/20 rounded text-foreground"
+                  onClick={() => { setStateFilter(null); setShowStateMenu(false) }}
+                >
+                  Tutti gli stati
+                </button>
+                {uniqueStates.map((st) => (
+                  <button
+                    key={st}
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-muted/20 rounded flex items-center justify-between text-foreground"
+                    onClick={() => { setStateFilter(st); setShowStateMenu(false) }}
+                  >
+                    <span className="truncate">{st}</span>
+                    {stateFilter === st && <span className="text-xs text-muted-foreground">✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-muted-foreground">{filteredData.length} risultati</div>
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg"
+              onClick={() => { setSearchTerm(''); setStateFilter(null); setCurrentPage(1) }}
+            >
+              Aggiorna
+            </Button>
+          </div>
         </div>
       )}
 

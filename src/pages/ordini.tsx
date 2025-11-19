@@ -17,8 +17,11 @@ const renderStatoBadge = (stato: StatoOrdine) => {
       return <Badge className="bg-blue-600 hover:bg-blue-700 text-white">⏳ In lavorazione</Badge>
     case StatoOrdine.SPEDITO:
       return <Badge className="bg-purple-600 hover:bg-purple-700 text-white">📦 Spedito</Badge>
+    case StatoOrdine.ANNULLATO:
+      return <Badge className="bg-red-600 hover:bg-red-700 text-white">✖ Annullato</Badge>
     default:
-      return <Badge>{stato}</Badge>
+      // fallback visibile anche in dark mode
+      return <Badge variant="outline" className="border border-muted text-sm text-muted-foreground px-2 py-1">{stato}</Badge>
   }
 }
 

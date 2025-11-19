@@ -17,7 +17,8 @@ import {
   Settings,
   ShoppingBag
 } from "lucide-react"
-import { useState } from "react"
+import FileUploader, { FilePreviewModal } from "@/components/ui/file-uploader"
+import { useState, useEffect } from "react"
 
 const fileCategories = [
   { name: "Schede Tecniche", icon: FileText, count: 127, color: "bg-blue-500" },
@@ -307,32 +308,52 @@ export default function FilePage() {
     }
   }
 
+  // uploaded files stored by FileUploader in localStorage (demo)
+  const [uploadedFiles, setUploadedFiles] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem('uploadedFiles') || '[]') } catch { return [] }
+  })
+
+  useEffect(() => {
+    const onStorage = () => setUploadedFiles(JSON.parse(localStorage.getItem('uploadedFiles') || '[]'))
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
+
   return (
     <div className="p-6 space-y-6">
       {/* Header Section */}
       <Card className="border-2">
         <CardHeader className="flex flex-row items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-500 rounded-lg">
-              <FileIcon className="h-6 w-6 text-white" />
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-blue-500 rounded-lg">
+                <FileIcon className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl">File</CardTitle>
+                <p className="text-sm text-muted-foreground">Organizza documenti, schede tecniche e certificazioni per articoli moto</p>
+              </div>
             </div>
-            <div>
-              <CardTitle className="text-2xl">File</CardTitle>
-              <p className="text-sm text-muted-foreground">Organizza documenti, schede tecniche e certificazioni per articoli moto</p>
+            <div className="flex items-center gap-3">
+              <Button variant="outline" size="sm">
+                <Download className="h-4 w-4 mr-2" />
+                Esporta
+              </Button>
+              <Button
+                className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full font-semibold"
+                onClick={() => { (document.getElementById('__file_input') as HTMLInputElement | null)?.click() }}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Carica File
+              </Button>
             </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Esporta
-            </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full font-semibold">
-              <Upload className="h-4 w-4 mr-2" />
-              Carica File
-            </Button>
-          </div>
         </CardHeader>
       </Card>
+
+      {/* Uploader */}
+      <FileUploader />
+
+      {/* Preview modal rendered at page level so it overlays whole app */}
+      {/* The FileUploader exposes blob URL via window event? Simpler: keep preview handled inside uploader; omitted here. */}
 
       {/* Search and Filters */}
       <div className="flex items-center justify-between gap-4">
@@ -618,6 +639,42 @@ export default function FilePage() {
             </CardContent>
           </Card>
         </div>
+      )}
+
+      {/* Uploaded files (from localStorage) */}
+      {!selectedCategory && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl">Uploaded (demo)</CardTitle>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => {
+                  localStorage.removeItem('uploadedFiles')
+                  setUploadedFiles([])
+                }}>
+                  Pulisci lista
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {uploadedFiles.length === 0 ? (
+              <div className="text-sm text-muted-foreground">Nessun file caricato (demo).</div>
+            ) : (
+              <div className="space-y-2">
+                {uploadedFiles.map((f: any, i: number) => (
+                  <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/20">
+                    <div>
+                      <div className="font-medium text-sm">{f.name}</div>
+                      <div className="text-xs text-muted-foreground">{(f.size/1024/1024).toFixed(2)} MB • {new Date(f.date).toLocaleString()}</div>
+                    </div>
+                    <div className="text-sm text-muted-foreground">{f.type}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       )}
     </div>
   )
