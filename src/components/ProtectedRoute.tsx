@@ -4,7 +4,7 @@ interface ProtectedRouteProps {
   children: React.ReactNode
 }
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
+export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true"
 
   if (!isAuthenticated) {
@@ -13,3 +13,5 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   return <>{children}</>
 }
+
+ProtectedRoute.displayName = "ProtectedRoute"

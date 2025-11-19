@@ -3,10 +3,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 
-export function AppSidebar() {
+export const AppSidebar = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  
+
   const isActive = (path: string) =>
     path === "/" ? location.pathname === "/" : location.pathname.startsWith(path)
 
@@ -222,3 +222,5 @@ export function AppSidebar() {
     </aside>
   )
 }
+
+AppSidebar.displayName = "AppSidebar"

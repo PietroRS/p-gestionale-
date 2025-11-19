@@ -17,7 +17,14 @@ type Tech = {
   datasheetUrl?: string
 }
 
-export default function TechCard({ item, onCompareToggle, selected, onOpen }: { item: Tech, onCompareToggle: (id: string) => void, selected: boolean, onOpen: (url?: string, item?: Tech) => void }) {
+type TechCardProps = {
+  item: Tech
+  onCompareToggle: (id: string) => void
+  selected: boolean
+  onOpen: (url?: string, item?: Tech) => void
+}
+
+export const TechCard = ({ item, onCompareToggle, selected, onOpen }: TechCardProps) => {
   const [showPreview, setShowPreview] = useState(false)
   const rootRef = useRef<HTMLDivElement | null>(null)
 
@@ -50,7 +57,12 @@ export default function TechCard({ item, onCompareToggle, selected, onOpen }: { 
         {/* If datasheetUrl points to an image, show a small thumbnail */}
         {item.datasheetUrl && /\.(jpe?g|png|gif|webp|svg)$/i.test(item.datasheetUrl) ? (
           <div className="mb-3">
-            <img src={item.datasheetUrl} alt={`${item.nome} - anteprima`} className="w-full h-32 object-contain rounded bg-muted/5 cursor-pointer" onClick={() => setShowPreview(true)} />
+            <img
+              src={item.datasheetUrl}
+              alt={`${item.nome} - anteprima`}
+              className="w-full h-32 object-contain rounded bg-muted/5 cursor-pointer"
+              onClick={() => setShowPreview(true)}
+            />
           </div>
         ) : null}
 
@@ -75,31 +87,35 @@ export default function TechCard({ item, onCompareToggle, selected, onOpen }: { 
         </div>
       </CardContent>
 
-        {/* Inline small preview popup (anchored to the card) */}
-        {showPreview && item.datasheetUrl ? (
-          <div className="absolute right-4 top-4 z-50 w-80 bg-white dark:bg-slate-900 border rounded shadow-lg p-3">
-            <div className="flex justify-between items-start gap-2">
-              <strong className="text-sm">Anteprima</strong>
-              <button className="text-xs text-muted-foreground" onClick={() => setShowPreview(false)}>Chiudi</button>
-            </div>
-            <div className="mt-2">
-              {/\.(jpe?g|png|gif|webp|svg)(\?.*)?$/i.test(item.datasheetUrl) ? (
-                <img src={item.datasheetUrl} alt={`${item.nome} anteprima`} className="w-full h-36 object-contain rounded bg-muted/5" />
-              ) : (
-                <div className="w-full h-36 flex items-center justify-center text-xs text-muted-foreground">Preview non disponibile (Apri per visualizzare)</div>
-              )}
-            </div>
-            <div className="mt-2 text-sm grid grid-cols-2 gap-2">
-              <div>Densità: <strong>{item.densita_kg_m3} kg/m³</strong></div>
-              <div>Resistenza: <strong>{item.resistenza_mpa} MPa</strong></div>
-              <div>Temp. max: <strong>{item.temp_max_c}°C</strong></div>
-              <div>€ {item.costo_eur.toFixed(2)}</div>
-            </div>
-            <div className="mt-3 flex justify-end gap-2">
-              <Button size="sm" variant="ghost" onClick={() => { setShowPreview(false); onOpen(item.datasheetUrl, item) }}>Apri</Button>
-            </div>
+      {/* Inline small preview popup (anchored to the card) */}
+      {showPreview && item.datasheetUrl ? (
+        <div className="absolute right-4 top-4 z-50 w-80 bg-white dark:bg-slate-900 border rounded shadow-lg p-3">
+          <div className="flex justify-between items-start gap-2">
+            <strong className="text-sm">Anteprima</strong>
+            <button className="text-xs text-muted-foreground" onClick={() => setShowPreview(false)}>Chiudi</button>
           </div>
-        ) : null}
+          <div className="mt-2">
+            {/\.(jpe?g|png|gif|webp|svg)(\?.*)?$/i.test(item.datasheetUrl) ? (
+              <img src={item.datasheetUrl} alt={`${item.nome} anteprima`} className="w-full h-36 object-contain rounded bg-muted/5" />
+            ) : (
+              <div className="w-full h-36 flex items-center justify-center text-xs text-muted-foreground">Preview non disponibile (Apri per visualizzare)</div>
+            )}
+          </div>
+          <div className="mt-2 text-sm grid grid-cols-2 gap-2">
+            <div>Densità: <strong>{item.densita_kg_m3} kg/m³</strong></div>
+            <div>Resistenza: <strong>{item.resistenza_mpa} MPa</strong></div>
+            <div>Temp. max: <strong>{item.temp_max_c}°C</strong></div>
+            <div>€ {item.costo_eur.toFixed(2)}</div>
+          </div>
+          <div className="mt-3 flex justify-end gap-2">
+            <Button size="sm" variant="ghost" onClick={() => { setShowPreview(false); onOpen(item.datasheetUrl, item) }}>Apri</Button>
+          </div>
+        </div>
+      ) : null}
     </Card>
   )
 }
+
+TechCard.displayName = "TechCard"
+
+export default TechCard

@@ -1,5 +1,6 @@
+import * as React from "react"
 import { TrendingUp, TrendingDown } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
 interface SectionCardProps {
@@ -11,9 +12,9 @@ interface SectionCardProps {
   currency?: string
 }
 
-export function SectionCard({ title, value, trend, subtitle, description, currency }: SectionCardProps) {
+const _SectionCard = ({ title, value, trend, subtitle, description, currency }: SectionCardProps) => {
   const isPositive = trend?.startsWith("+")
-  
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -41,3 +42,6 @@ export function SectionCard({ title, value, trend, subtitle, description, curren
     </Card>
   )
 }
+
+export const SectionCard = React.memo(_SectionCard)
+SectionCard.displayName = "SectionCard"

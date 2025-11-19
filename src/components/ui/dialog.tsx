@@ -6,7 +6,7 @@ type DialogProps = {
   children?: React.ReactNode
 }
 
-export function Dialog({ open, onOpenChange, children }: DialogProps) {
+export const Dialog = ({ open, onOpenChange, children }: DialogProps) => {
   return (
     <div>
       {open ? (
@@ -19,18 +19,23 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
   )
 }
 
-export function DialogContent({ children }: { children?: React.ReactNode }) {
+Dialog.displayName = "Dialog"
+
+export const DialogContent = ({ children }: { children?: React.ReactNode }) => {
   return (
     <div className="w-[90vw] max-w-4xl max-h-[90vh] bg-white dark:bg-slate-900 rounded p-4 shadow-lg overflow-auto">{children}</div>
   )
 }
+DialogContent.displayName = "DialogContent"
 
-export function DialogHeader({ children }: { children?: React.ReactNode }) {
+export const DialogHeader = ({ children }: { children?: React.ReactNode }) => {
   return <div className="mb-2">{children}</div>
 }
+DialogHeader.displayName = "DialogHeader"
 
-export function DialogTitle({ children }: { children?: React.ReactNode }) {
+export const DialogTitle = ({ children }: { children?: React.ReactNode }) => {
   return <h3 className="text-lg font-semibold">{children}</h3>
 }
+DialogTitle.displayName = "DialogTitle"
 
 export default Dialog

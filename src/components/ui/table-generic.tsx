@@ -8,7 +8,7 @@ interface GenericTableProps<T extends BaseTableData> {
   config: TableConfig<T>
 }
 
-export function GenericTable<T extends BaseTableData>({ config }: GenericTableProps<T>) {
+export const GenericTable = <T extends BaseTableData,>({ config }: GenericTableProps<T>) => {
   const {
     data,
     columns,
@@ -315,3 +315,6 @@ export function GenericTable<T extends BaseTableData>({ config }: GenericTablePr
     </div>
   )
 }
+
+// Add displayName for better debugging
+GenericTable.displayName = 'GenericTable'

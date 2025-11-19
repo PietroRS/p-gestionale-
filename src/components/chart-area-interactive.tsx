@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { ChartConfig } from "./ui/chart"
@@ -20,7 +21,7 @@ interface ChartAreaInteractiveProps {
   data: Array<{ date: string; visitors: number }>
 }
 
-export function ChartAreaInteractive({ title, subtitle, data }: ChartAreaInteractiveProps) {
+const _ChartAreaInteractive = ({ title, subtitle, data }: ChartAreaInteractiveProps) => {
   return (
     <Card>
       <CardHeader>
@@ -74,3 +75,6 @@ export function ChartAreaInteractive({ title, subtitle, data }: ChartAreaInterac
     </Card>
   )
 }
+
+export const ChartAreaInteractive = React.memo(_ChartAreaInteractive)
+ChartAreaInteractive.displayName = "ChartAreaInteractive"

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 
-export function SiteHeader() {
+export const SiteHeader = () => {
   const [isDark, setIsDark] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const navigate = useNavigate()
@@ -115,3 +115,5 @@ export function SiteHeader() {
     </header>
   )
 }
+
+SiteHeader.displayName = "SiteHeader"

@@ -11,7 +11,7 @@ type UploadItem = {
   error?: string
 }
 
-export function FileUploader() {
+export const FileUploader = () => {
   const [items, setItems] = useState<UploadItem[]>([])
   const [dragOver, setDragOver] = useState(false)
 
@@ -225,10 +225,12 @@ export function FileUploader() {
   )
 }
 
+FileUploader.displayName = "FileUploader"
+
 export default FileUploader
 
 // Simple modal render outside main uploader element
-export function FilePreviewModal({ url, onClose }: { url: string | null, onClose: () => void }) {
+export const FilePreviewModal = ({ url, onClose }: { url: string | null, onClose: () => void }) => {
   if (!url) return null
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -244,3 +246,5 @@ export function FilePreviewModal({ url, onClose }: { url: string | null, onClose
     </div>
   )
 }
+
+FilePreviewModal.displayName = "FilePreviewModal"
