@@ -12,7 +12,7 @@ interface OpzioneSpedizione {
   attiva: boolean
 }
 
-export default function ProgettiPage() {
+export default function Spedizioni() {
   const [opzioni, setOpzioni] = useState<OpzioneSpedizione[]>([
     {
       nome: "Express",

@@ -1,18 +1,18 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppSidebar } from './components/app-sidebar'
 import { SiteHeader } from './components/site-header'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import LoginPage from './pages/login'
 import DashboardPage from './app/dashboard/page'
 import CreazioneRapidaPage from './pages/dashboard'
-import PannelloControlloPage from './pages/ordini'
-import CicloVitalePage from './pages/file'
-import AnalisiPage from './pages/prezzi'
-import ProgettiPage from './pages/spedizioni'
-import SquadraPage from './pages/tecnologie'
-import BibliotecaDatiPage from './pages/coupon'
-import RapportiPage from './pages/utenti'
-import AssistenteParolePage from './pages/impostazioni'
+import FilePage from './pages/file'
+import PrezziPage from './pages/prezzi' 
+import SpedizioniPage from './pages/spedizioni'
+import TecnologiePage from './pages/tecnologie'
+import CouponPage from './pages/coupon'
+import UtentiPage from './pages/utenti'
+import ImpostazioniPage from './pages/impostazioni'
+import Ordini from './pages/ordini'
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -59,88 +59,90 @@ function App() {
         />
         
         <Route
-          path="/pannello-controllo"
+          path="/ordini"
           element={
             <ProtectedRoute>
               <AppLayout>
-                <PannelloControlloPage />
+                <Ordini/>
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        
+        
+        
+        <Route
+          path="/prezzi"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <PrezziPage />
               </AppLayout>
             </ProtectedRoute>
           }
         />
         
         <Route
-          path="/ciclo-vitale"
+          path="/spedizioni"
           element={
             <ProtectedRoute>
               <AppLayout>
-                <CicloVitalePage />
+                <SpedizioniPage />
               </AppLayout>
             </ProtectedRoute>
           }
         />
         
         <Route
-          path="/analisi"
+          path="/tecnologie"
           element={
             <ProtectedRoute>
               <AppLayout>
-                <AnalisiPage />
+                <TecnologiePage />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        
+        
+        <Route
+          path="/coupon"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <CouponPage />
               </AppLayout>
             </ProtectedRoute>
           }
         />
         
         <Route
-          path="/progetti"
+          path="/utenti"
           element={
             <ProtectedRoute>
               <AppLayout>
-                <ProgettiPage />
+                <UtentiPage />
               </AppLayout>
             </ProtectedRoute>
           }
         />
         
         <Route
-          path="/squadra"
+          path="/impostazioni"
           element={
             <ProtectedRoute>
               <AppLayout>
-                <SquadraPage />
+                <ImpostazioniPage />
               </AppLayout>
             </ProtectedRoute>
           }
         />
-        
         <Route
-          path="/biblioteca-dati"
+          path="/file"
           element={
             <ProtectedRoute>
               <AppLayout>
-                <BibliotecaDatiPage />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path="/rapporti"
-          element={
-            <ProtectedRoute>
-              <AppLayout>
-                <RapportiPage />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path="/assistente-parole"
-          element={
-            <ProtectedRoute>
-              <AppLayout>
-                <AssistenteParolePage />
+                <FilePage />
               </AppLayout>
             </ProtectedRoute>
           }

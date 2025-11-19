@@ -7,7 +7,8 @@ export function AppSidebar() {
   const location = useLocation()
   const navigate = useNavigate()
   
-  const isActive = (path: string) => location.pathname === path
+  const isActive = (path: string) =>
+    path === "/" ? location.pathname === "/" : location.pathname.startsWith(path)
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated')
@@ -39,7 +40,7 @@ export function AppSidebar() {
         <Link 
           to="/"
           className={cn(
-            "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg text-white",
+            "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative text-white",
             isActive("/") 
               ? "bg-primary text-primary-foreground text-white" 
               : "hover:bg-accent"
@@ -56,15 +57,15 @@ export function AppSidebar() {
         </Link>
 
         <Link 
-          to="/pannello-controllo"
+          to="/ordini"
           className={cn(
             "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative",
-            isActive("/pannello-controllo") 
+            isActive("/ordini") 
               ? "bg-primary text-primary-foreground" 
               : "hover:bg-accent"
           )}
         >
-          {isActive("/pannello-controllo") && (
+          {isActive("/ordini") && (
             <div className="absolute right-0 top-0 h-full w-1 bg-primary rounded-l" />
           )}
           <div className="flex items-center gap-3">
@@ -75,15 +76,15 @@ export function AppSidebar() {
         </Link>
 
         <Link 
-          to="/ciclo-vitale"
+          to="/file"
           className={cn(
             "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative",
-            isActive("/ciclo-vitale") 
+            isActive("/file") 
               ? "bg-primary text-primary-foreground" 
               : "hover:bg-accent"
           )}
         >
-          {isActive("/ciclo-vitale") && (
+          {isActive("/file") && (
             <div className="absolute right-0 top-0 h-full w-1 bg-primary rounded-l" />
           )}
           <div className="flex items-center gap-3">
@@ -94,15 +95,15 @@ export function AppSidebar() {
         </Link>
 
         <Link 
-          to="/analisi"
+          to="/prezzi"
           className={cn(
             "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative",
-            isActive("/analisi") 
+            isActive("/prezzi") 
               ? "bg-primary text-primary-foreground" 
               : "hover:bg-accent"
           )}
         >
-          {isActive("/analisi") && (
+          {isActive("/prezzi") && (
             <div className="absolute right-0 top-0 h-full w-1 bg-primary rounded-l" />
           )}
           <div className="flex items-center gap-3">
@@ -113,15 +114,15 @@ export function AppSidebar() {
         </Link>
 
         <Link 
-          to="/progetti"
+          to="/spedizioni"
           className={cn(
             "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative",
-            isActive("/progetti") 
+            isActive("/spedizioni") 
               ? "bg-primary text-primary-foreground" 
               : "hover:bg-accent"
           )}
         >
-          {isActive("/progetti") && (
+          {isActive("/spedizioni") && (
             <div className="absolute right-0 top-0 h-full w-1 bg-primary rounded-l" />
           )}
           <div className="flex items-center gap-3">
@@ -132,15 +133,15 @@ export function AppSidebar() {
         </Link>
 
         <Link 
-          to="/squadra"
+          to="/tecnologie"
           className={cn(
             "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative",
-            isActive("/squadra") 
+            isActive("/tecnologie") 
               ? "bg-primary text-primary-foreground" 
               : "hover:bg-accent"
           )}
         >
-          {isActive("/squadra") && (
+          {isActive("/tecnologie") && (
             <div className="absolute right-0 top-0 h-full w-1 bg-primary rounded-l" />
           )}
           <div className="flex items-center gap-3">
@@ -151,15 +152,15 @@ export function AppSidebar() {
         </Link>
 
         <Link 
-          to="/biblioteca-dati"
+          to="/coupon"
           className={cn(
             "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative",
-            isActive("/biblioteca-dati") 
+            isActive("/coupon") 
               ? "bg-primary text-primary-foreground" 
               : "hover:bg-accent"
           )}
         >
-          {isActive("/biblioteca-dati") && (
+          {isActive("/coupon") && (
             <div className="absolute right-0 top-0 h-full w-1 bg-primary rounded-l" />
           )}
           <div className="flex items-center gap-3">
@@ -170,15 +171,15 @@ export function AppSidebar() {
         </Link>
 
         <Link 
-          to="/rapporti"
+          to="/utenti"
           className={cn(
             "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative",
-            isActive("/rapporti") 
+            isActive("/utenti") 
               ? "bg-primary text-primary-foreground" 
               : "hover:bg-accent"
           )}
         >
-          {isActive("/rapporti") && (
+          {isActive("/utenti") && (
             <div className="absolute right-0 top-0 h-full w-1 bg-primary rounded-l" />
           )}
           <div className="flex items-center gap-3">
@@ -189,15 +190,15 @@ export function AppSidebar() {
         </Link>
 
         <Link 
-          to="/assistente-parole"
+          to="/impostazioni"
           className={cn(
             "flex w-full flex-col gap-1 rounded-md px-3 py-2.5 text-sm relative",
-            isActive("/assistente-parole") 
+            isActive("/impostazioni") 
               ? "bg-primary text-primary-foreground" 
               : "hover:bg-accent"
           )}
         >
-          {isActive("/assistente-parole") && (
+          {isActive("/impostazioni") && (
             <div className="absolute right-0 top-0 h-full w-1 bg-primary rounded-l" />
           )}
           <div className="flex items-center gap-3">

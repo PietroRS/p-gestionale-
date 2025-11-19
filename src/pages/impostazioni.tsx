@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Settings } from "lucide-react"
 import { useState } from "react"
 
-export default function AssistenteParolePage() {
+export default function ImpostazioniPage() {
   const [maintenanceMode, setMaintenanceMode] = useState(true)
   const [formData, setFormData] = useState({
     nomeAzienda: "MotoSport",

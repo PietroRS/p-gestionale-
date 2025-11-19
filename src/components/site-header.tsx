@@ -56,16 +56,16 @@ export function SiteHeader() {
   const pathTitles: Record<string, string> = {
     "/": "Dashboard",
     "/creazione-rapida": "Creazione rapida",
-    "/pannello-controllo": "Ordini",
-    "/ciclo-vitale": "File",
-    "/analisi": "Prezzi",
-    "/progetti": "Progetti",
-    "/squadra": "Squadra",
-    "/biblioteca-dati": "Biblioteca dati",
-    "/rapporti": "Rapporti",
-    "/assistente-parole": "Assistente parole",
+    "/ordini": "Ordini",
     "/file": "File",
+    "/prezzi": "Prezzi",
+       "/spedizioni": "Spedizioni",
+       "/tecnologie": "Tecnologie & Materiali",
+      "/coupon": "Coupon & Sconti",
+      "/utenti": "Utenti",
+      "/impostazioni": "Impostazioni",
   }
+    
 
   const formatSegment = (seg: string) =>
     seg

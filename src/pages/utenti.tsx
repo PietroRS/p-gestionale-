@@ -90,7 +90,7 @@ const getStatoBadge = (stato: string) => {
     : <Badge variant="outline" className="border-gray-500 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-950">● Inattivo</Badge>
 }
 
-export default function RapportiPage() {
+export default function UtentiPage() {
   // Funzione per caricare utenti dal localStorage
   const loadUtenti = () => {
     const saved = localStorage.getItem('gestionale-utenti')

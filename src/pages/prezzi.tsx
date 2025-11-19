@@ -64,7 +64,7 @@ const tipiListino = [
     icon: Clock, 
     description: "Prezzi ridotti off-season", 
     ricarico: 20, 
-    attivo: false,
+    attivo: true,
     colore: "bg-orange-500"
   }
 ]

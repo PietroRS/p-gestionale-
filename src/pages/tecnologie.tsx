@@ -21,7 +21,7 @@ interface Materiale {
   categoria: string
 }
 
-export default function SquadraPage() {
+export default function TecnologiePage() {
   const [tecnologie] = useState<Tecnologia[]>([
     {
       id: 1,

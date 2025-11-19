@@ -16,7 +16,7 @@ interface Coupon {
   stato: "Attivo" | "Inattivo"
 }
 
-export default function BibliotecaDatiPage() {
+export default function CouponPage() {
   const [scontoBenvenuto, setScontoBenvenuto] = useState("0,00")
   const [couponAttivi, setCouponAttivi] = useState<Coupon[]>([
     {

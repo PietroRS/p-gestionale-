@@ -36,7 +36,7 @@ const renderPrioritaBadge = (priorita: PrioritaOrdine) => {
   }
 }
 
-export default function PannelloControlloPage() {
+export default function Ordini() {
   // Calcolo delle statistiche
   const totaleOrdini = ordiniData.length
   const ordiniInLavorazione = ordiniData.filter(o => o.stato === StatoOrdine.IN_LAVORAZIONE).length
