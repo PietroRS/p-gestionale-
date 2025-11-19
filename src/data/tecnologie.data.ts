@@ -10,8 +10,8 @@ export const tecnologieData = [
     temp_max_c: 850,
     costo_eur: 129.0,
     certificazioni: ['CE'],
-    datasheetUrl: '/images/prodotti/brembo-z04.svg',
-    immagini: ['/images/prodotti/brembo-z04.svg']
+    datasheetUrl: '/images/prodotti/Immagine 2025-11-19 173935.png',
+    immagini: ['/images/prodotti/Immagine 2025-11-19 173935.png']
   },
   {
     id: 'T-002',
