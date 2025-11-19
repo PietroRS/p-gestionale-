@@ -1,235 +1,286 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Layers, Plus, Edit, Trash2, Printer, Package } from "lucide-react"
-import { useState } from "react"
+import React, { useMemo, useState, useEffect, useRef } from 'react'
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import TechCard from '@/components/tech-card'
+import tecnologieData from '@/data/tecnologie.data'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
-interface Tecnologia {
-  id: number
-  nome: string
-  descrizione: string
-  stato: "Attiva" | "Inattiva"
-  tipo: "Stampa"
-}
+export default function TecnologiePage(): JSX.Element {
+  const [query, setQuery] = useState('')
+  const [selectedTags, setSelectedTags] = useState<string | null>(null)
+  const [compareIds, setCompareIds] = useState<string[]>([])
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [previewItem, setPreviewItem] = useState<any | null>(null)
+  const [openCompare, setOpenCompare] = useState(false)
 
-interface Materiale {
-  id: number
-  nome: string
-  colore: string
-  prezzo: string
-  disponibile: boolean
-  categoria: string
-}
-
-export default function TecnologiePage() {
-  const [tecnologie] = useState<Tecnologia[]>([
-    {
-      id: 1,
-      nome: "Alluminio 7075",
-      descrizione: "Lega di alluminio aeronautico ad alta resistenza",
-      stato: "Attiva",
-      tipo: "Stampa"
-    },
-    {
-      id: 2,
-      nome: "Acciaio Inox 316L",
-      descrizione: "Acciaio inossidabile resistente alla corrosione",
-      stato: "Attiva", 
-      tipo: "Stampa"
-    },
-    {
-      id: 3,
-      nome: "Titanio Ti6Al4V",
-      descrizione: "Lega di titanio ultraleggera e resistente",
-      stato: "Inattiva",
-      tipo: "Stampa"
-    },
-    {
-      id: 4,
-      nome: "Magnesio AZ31",
-      descrizione: "Lega di magnesio per componenti ultraleggeri",
-      stato: "Attiva",
-      tipo: "Stampa"
+  const [itemsState, setItemsState] = useState(() => {
+    try {
+      const raw = localStorage.getItem('tecnologieItems')
+      return raw ? JSON.parse(raw) : tecnologieData
+    } catch {
+      return tecnologieData
     }
-  ])
+  })
 
-  const [materiali] = useState<Materiale[]>([
-    {
-      id: 1,
-      nome: "Fibra di Carbonio",
-      colore: "Nero opaco",
-      prezzo: "€120.00/kg",
-      disponibile: true,
-      categoria: "Fibra composita"
-    },
-    {
-      id: 2,
-      nome: "Kevlar",
-      colore: "Giallo/Oro",
-      prezzo: "€150.00/kg", 
-      disponibile: true,
-      categoria: "Fibra aramidica"
-    },
-    {
-      id: 3,
-      nome: "ABS Rinforzato",
-      colore: "Nero",
-      prezzo: "€45.00/kg",
-      disponibile: false,
-      categoria: "Termoplastico"
-    },
-    {
-      id: 4,
-      nome: "PEEK",
-      colore: "Naturale",
-      prezzo: "€200.00/kg",
-      disponibile: true,
-      categoria: "Termoplastico High-Performance"
-    },
-    {
-      id: 5,
-      nome: "Nylon PA12",
-      colore: "Bianco",
-      prezzo: "€80.00/kg",
-      disponibile: true,
-      categoria: "Poliammide"
-    },
-    {
-      id: 6,
-      nome: "TPU Flessibile",
-      colore: "Rosso",
-      prezzo: "€65.00/kg",
-      disponibile: false,
-      categoria: "Elastomero"
+  // One-time auto-reset: if we haven't done it yet on this browser, clear
+  // any stored `tecnologieItems` and force in-memory data to the source.
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem('tec_auto_reset_done')) {
+        localStorage.removeItem('tecnologieItems')
+        localStorage.setItem('tec_auto_reset_done', '1')
+        setItemsState(tecnologieData)
+      }
+    } catch (e) {
+      // ignore
     }
-  ])
+  }, [])
+
+  // Quick reset helper: if the page is loaded with ?resetData=1, clear stored items
+  // and reload the in-memory data so updated `datasheetUrl` and `immagini` are visible.
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('resetData') === '1') {
+        localStorage.removeItem('tecnologieItems')
+        setItemsState(tecnologieData)
+        // remove query param from URL without reloading
+        params.delete('resetData')
+        const base = window.location.pathname + (params.toString() ? `?${params.toString()}` : '')
+        window.history.replaceState({}, '', base)
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [])
+
+  // If user has an older `tecnologieItems` in localStorage (from previous runs),
+  // merge it with current `tecnologieData` so new fields (e.g. datasheetUrl/immagini)
+  // added in source are picked up without forcing the user to clear localStorage.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('tecnologieItems')
+      if (!raw) return
+      const stored = JSON.parse(raw)
+      if (!Array.isArray(stored)) return
+      const map = new Map<string, any>()
+      tecnologieData.forEach((t: any) => map.set(t.id, t))
+      let changed = false
+      const merged = stored.map((s: any) => {
+        const base = map.get(s.id)
+        if (!base) return s
+        // bring missing fields from base into stored item
+        const mergedItem = { ...base, ...s }
+        if (!s.datasheetUrl && base.datasheetUrl) changed = true
+        if ((!s.immagini || s.immagini.length === 0) && (base.immagini && base.immagini.length)) changed = true
+        return mergedItem
+      })
+      if (changed) {
+        setItemsState(merged)
+        try { localStorage.setItem('tecnologieItems', JSON.stringify(merged)) } catch {}
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [])
+
+  const csvInputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    try { localStorage.setItem('tecnologieItems', JSON.stringify(itemsState)) } catch {}
+  }, [itemsState])
+
+  const allTags = useMemo(() => {
+    const s = new Set<string>()
+    itemsState.forEach((t: any) => (t.tag || []).forEach((tg: string) => s.add(tg)))
+    return Array.from(s)
+  }, [itemsState])
+
+  const items = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return itemsState.filter((i: any) => {
+      if (selectedTags && !((i.tag || []) as string[]).includes(selectedTags)) return false
+      if (!q) return true
+      return [i.nome, i.categoria, (i.tag || []).join(' '), i.descrizione].join(' ').toLowerCase().includes(q)
+    })
+  }, [query, selectedTags, itemsState])
+
+  const toggleCompare = (id: string) => {
+    setCompareIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : (prev.length < 3 ? [...prev, id] : prev))
+  }
+
+  const openPreview = (url?: string, item?: any) => {
+    // Prefer the authoritative datasheetUrl from source `tecnologieData` when available.
+    try {
+      if (item && item.id) {
+        const base = (tecnologieData as any).find((t: any) => t.id === item.id)
+        const chosenUrl = base?.datasheetUrl || url
+        setPreviewUrl(chosenUrl ?? null)
+        // merge base + item so we show the latest fields (base provides new images)
+        setPreviewItem({ ...(base || {}), ...(item || {}) })
+        return
+      }
+    } catch (e) {
+      // fallback to provided url/item
+    }
+    if (!url) return
+    setPreviewUrl(url)
+    setPreviewItem(item ?? null)
+  }
+
+  const isImageUrl = (u?: string | null) => {
+    if (!u) return false
+    return /\.(jpe?g|png|gif|webp|svg)(\?.*)?$/i.test(u)
+  }
+
+  const handleCsvFile = async (file: File) => {
+    try {
+      const text = await file.text()
+      const lines = text.split(/\r?\n/).filter(Boolean)
+      if (lines.length === 0) return alert('CSV vuoto')
+      const headers = lines[0].split(',').map(h => h.trim())
+      const rows = lines.slice(1).map(l => {
+        const cols = l.split(',').map(c => c.trim())
+        const obj: any = {}
+        headers.forEach((h, i) => { obj[h] = cols[i] ?? '' })
+        return obj
+      })
+
+      const normalized = rows.map((r, idx) => {
+        const tags = (r.tag || r.tags || '')
+          .toString().split(/;|,|\|/).map((s: string) => s.trim()).filter(Boolean)
+        return {
+          id: r.id || `CSV-${Date.now()}-${idx}`,
+          nome: r.nome || r.name || 'Unnamed',
+          categoria: r.categoria || r.category || 'Generico',
+          tag: tags,
+          descrizione: r.descrizione || r.description || '',
+          densita_kg_m3: Number(r.densita_kg_m3 || r.density || 0) || 0,
+          resistenza_mpa: Number(r.resistenza_mpa || r.resistance || 0) || 0,
+          temp_max_c: Number(r.temp_max_c || r.temp_max || 0) || 0,
+          costo_eur: Number(r.costo_eur || r.price || 0) || 0,
+          certificazioni: (r.certificazioni || '').toString().split(/;|,|\|/).map((s: string) => s.trim()).filter(Boolean),
+          datasheetUrl: r.datasheetUrl || r.datasheet || ''
+        }
+      })
+
+      setItemsState(prev => {
+        const merged = [...normalized, ...prev]
+        try { localStorage.setItem('tecnologieItems', JSON.stringify(merged)) } catch {}
+        return merged
+      })
+      alert(`Importati ${normalized.length} elementi dal CSV`)
+    } catch (e) {
+      console.error(e)
+      alert('Errore durante l\'import CSV')
+    }
+  }
 
   return (
     <div className="p-6 space-y-6">
       <Card className="border-2">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-500 rounded-lg">
-              <Layers className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <CardTitle className="text-2xl">Tecnologie & Materiali</CardTitle>
-              <p className="text-sm text-muted-foreground">Gestisci tecnologie di stampa e materiali disponibili</p>
-            </div>
+        <CardHeader className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-2xl">Tecnologie & Materiali</CardTitle>
+            <p className="text-sm text-muted-foreground">Esplora materiali, schede tecniche e confronta proprietà</p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">
-            <Plus className="mr-2 h-4 w-4" />
-            Aggiungi Nuovo
-          </Button>
+          <div className="flex items-center gap-3">
+            <Input placeholder="Cerca tecnologia o tag..." value={query} onChange={(e) => setQuery(e.target.value)} className="min-w-[300px]" />
+            <Button onClick={() => { setQuery(''); setSelectedTags(null); setCompareIds([]) }}>Reset</Button>
+            <Button onClick={() => setOpenCompare(true)} disabled={compareIds.length < 2}>Confronta ({compareIds.length})</Button>
+            <input ref={csvInputRef} id="__csv_input" type="file" accept="text/csv" className="hidden" onChange={(e) => {
+              const f = e.target.files?.[0]
+              if (f) handleCsvFile(f)
+              e.currentTarget.value = ''
+            }} />
+            <Button onClick={() => csvInputRef.current?.click()}>Importa CSV</Button>
+          </div>
         </CardHeader>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Tabella Tecnologie */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Printer className="h-5 w-5" />
-                <CardTitle className="text-lg">Materiali Metallici</CardTitle>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Nome</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Descrizione</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Stato</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Azioni</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tecnologie.map((tech) => (
-                    <tr key={tech.id} className="border-b border-border hover:bg-accent">
-                      <td className="py-3 px-2 text-foreground font-medium">{tech.nome}</td>
-                      <td className="py-3 px-2 text-muted-foreground">{tech.descrizione}</td>
-                      <td className="py-3 px-2">
-                        <Badge className={tech.stato === "Attiva" ? "bg-green-500/20 text-green-700 dark:text-green-400" : "bg-red-500/20 text-red-700 dark:text-red-400"}>
-                          {tech.stato}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-2">
-                        <div className="flex gap-2">
-                          <button className="text-muted-foreground hover:text-foreground">
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button className="text-muted-foreground hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Tabella Materiali */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Package className="h-5 w-5" />
-                <CardTitle className="text-lg">Materiali Disponibili</CardTitle>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Materiale</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Colore</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Prezzo</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Stato</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Azioni</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {materiali.map((materiale) => (
-                    <tr key={materiale.id} className="border-b border-border hover:bg-accent">
-                      <td className="py-3 px-2">
-                        <div>
-                          <div className="text-foreground font-medium">{materiale.nome}</div>
-                          <div className="text-xs text-muted-foreground">{materiale.categoria}</div>
-                        </div>
-                      </td>
-                      <td className="py-3 px-2 text-muted-foreground">{materiale.colore}</td>
-                      <td className="py-3 px-2 text-foreground font-medium">{materiale.prezzo}</td>
-                      <td className="py-3 px-2">
-                        <Badge className={materiale.disponibile ? "bg-green-500/20 text-green-700 dark:text-green-400" : "bg-red-500/20 text-red-700 dark:text-red-400"}>
-                          {materiale.disponibile ? "Disponibile" : "Esaurito"}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-2">
-                        <div className="flex gap-2">
-                          <button className="text-muted-foreground hover:text-foreground">
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button className="text-muted-foreground hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="flex gap-2 items-center">
+        <div className="text-sm text-muted-foreground mr-2">Tag:</div>
+        {allTags.map(t => (
+          <button key={t} onClick={() => setSelectedTags(prev => prev === t ? null : t)} className={`px-3 py-1 rounded ${selectedTags === t ? 'bg-blue-600 text-white' : 'bg-muted/10'}`}>
+            {t}
+          </button>
+        ))}
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {items.map((item: any) => (
+          <TechCard key={item.id} item={item} onCompareToggle={toggleCompare} selected={compareIds.includes(item.id)} onOpen={openPreview} />
+        ))}
+      </div>
+
+      {previewUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setPreviewUrl(null)} />
+          <div className="relative w-[90%] h-[90%] bg-card rounded shadow-xl overflow-hidden flex items-center justify-center">
+            <button className="absolute right-3 top-3 z-10 p-2 rounded bg-muted/40" onClick={() => setPreviewUrl(null)}>Close</button>
+            <div className="w-full h-full flex flex-col items-center justify-center p-4">
+              {isImageUrl(previewUrl) ? (
+                <img src={previewUrl as string} alt="Anteprima scheda tecnica" className="max-w-full max-h-[70%] object-contain mb-4" />
+              ) : (
+                <iframe src={previewUrl as string} className="w-full h-[70%]" title="Scheda tecnica" />
+              )}
+
+              {previewItem ? (
+                <div className="w-full max-w-3xl bg-muted/5 dark:bg-muted/10 rounded p-3">
+                  <h4 className="text-lg font-semibold mb-2">{previewItem.nome}</h4>
+                  <div className="text-sm grid grid-cols-2 gap-2">
+                    <div>Densità: <strong>{previewItem.densita_kg_m3} kg/m³</strong></div>
+                    <div>Resistenza: <strong>{previewItem.resistenza_mpa} MPa</strong></div>
+                    <div>Temp. max: <strong>{previewItem.temp_max_c} °C</strong></div>
+                    <div>Costo: <strong>€ {Number(previewItem.costo_eur || 0).toFixed(2)}</strong></div>
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground">{previewItem.descrizione}</p>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Dialog open={openCompare} onOpenChange={setOpenCompare}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confronto materiali</DialogTitle>
+          </DialogHeader>
+          <div className="overflow-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr>
+                  <th className="p-2">Proprietà</th>
+                  {compareIds.map(id => <th key={id} className="p-2">{itemsState.find((t: any) => t.id === id)?.nome}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="p-2 font-semibold">Densità (kg/m³)</td>
+                  {compareIds.map(id => <td key={id} className="p-2">{itemsState.find((t: any) => t.id === id)?.densita_kg_m3}</td>)}
+                </tr>
+                <tr>
+                  <td className="p-2 font-semibold">Resistenza (MPa)</td>
+                  {compareIds.map(id => <td key={id} className="p-2">{itemsState.find((t: any) => t.id === id)?.resistenza_mpa}</td>)}
+                </tr>
+                <tr>
+                  <td className="p-2 font-semibold">Temp. max (°C)</td>
+                  {compareIds.map(id => <td key={id} className="p-2">{itemsState.find((t: any) => t.id === id)?.temp_max_c}</td>)}
+                </tr>
+                <tr>
+                  <td className="p-2 font-semibold">Costo (€)</td>
+                  {compareIds.map(id => <td key={id} className="p-2">€ {(itemsState.find((t: any) => t.id === id)?.costo_eur ?? 0).toFixed(2)}</td>)}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button onClick={() => setOpenCompare(false)}>Chiudi</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

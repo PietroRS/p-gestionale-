@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react'
+import { uploadFile } from '@/lib/api'
 import { Button } from '@/components/ui/button'
-import { Upload, X, Image, FileText } from 'lucide-react'
+import { Upload, X, FileText } from 'lucide-react'
 
 type UploadItem = {
   file: File
@@ -56,23 +57,34 @@ export function FileUploader() {
   }
 
   const startUpload = (index: number) => {
-    setItems((prev) => prev.map((it, i) => i === index ? { ...it, status: it.error ? 'error' : 'uploading', progress: it.error ? 0 : 1 } : it))
-    // simulate progress
-    const interval = setInterval(() => {
+    setItems((prev) => prev.map((it, i) => i === index ? { ...it, status: it.error ? 'error' : 'uploading', progress: it.error ? 0 : 0 } : it))
+    const it = items[index]
+    if (!it || it.status === 'error') return
+    // use API client (will simulate if no backend)
+    uploadFile(it.file, (pct) => {
       setItems((prev) => {
         const copy = [...prev]
-        const it = copy[index]
-        if (!it) { clearInterval(interval); return prev }
-        if (it.status === 'error') { clearInterval(interval); return prev }
-        if (it.progress >= 100) {
-          copy[index] = { ...it, status: 'done', progress: 100 }
-          clearInterval(interval)
-          return copy
-        }
-        copy[index] = { ...it, progress: Math.min(100, it.progress + Math.floor(Math.random() * 20) + 5) }
+        if (!copy[index]) return prev
+        copy[index] = { ...copy[index], progress: pct }
         return copy
       })
-    }, 300)
+    }).then(() => {
+      setItems((prev) => {
+        const copy = [...prev]
+        if (!copy[index]) return prev
+        copy[index] = { ...copy[index], status: 'done', progress: 100 }
+        return copy
+      })
+      setToast('File caricati con successo')
+    }).catch((err) => {
+      setItems((prev) => {
+        const copy = [...prev]
+        if (!copy[index]) return prev
+        copy[index] = { ...copy[index], status: 'error', error: String(err) }
+        return copy
+      })
+      setToast('Errore durante il caricamento')
+    })
   }
 
   const startAll = () => {
@@ -111,24 +123,7 @@ export function FileUploader() {
     return () => clearTimeout(t)
   }, [toast])
 
-  // Persist completed uploads metadata to localStorage
-  useEffect(() => {
-    const completed = items.filter(i => i.status === 'done')
-    if (completed.length === 0) return
-    const stored = JSON.parse(localStorage.getItem('uploadedFiles' ) || '[]') as any[]
-    let changed = false
-    completed.forEach(c => {
-      // avoid duplicating by name+size
-      if (!stored.some(s => s.name === c.file.name && s.size === c.file.size)) {
-        stored.unshift({ name: c.file.name, size: c.file.size, type: c.file.type, date: new Date().toISOString() })
-        changed = true
-      }
-    })
-    if (changed) {
-      localStorage.setItem('uploadedFiles', JSON.stringify(stored.slice(0, 50)))
-      setToast('File caricati con successo')
-    }
-  }, [items])
+  // Note: persistence is handled by `uploadFile` mock when no backend is configured.
 
   // cleanup object URLs on unmount
   const createdUrlsRef = useRef<string[]>([])

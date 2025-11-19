@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <rect width="100%" height="100%" fill="#0f172a"/>
+  <g transform="translate(80,40)" fill="none" stroke="#f97316" stroke-width="6">
+    <rect x="0" y="0" width="440" height="320" rx="20"/>
+    <line x1="60" y1="280" x2="380" y2="280" stroke="#94a3b8" stroke-width="8"/>
+    <line x1="120" y1="40" x2="120" y2="320" stroke="#94a3b8" stroke-width="8"/>
+    <circle cx="120" cy="80" r="18" fill="#f97316" stroke="none"/>
+    <circle cx="320" cy="120" r="16" fill="#f97316" stroke="none"/>
+    <rect x="200" y="60" width="140" height="220" rx="8" fill="#0b1220" stroke="#f97316"/>
+  </g>
+  <text x="20" y="380" fill="#94a3b8" font-family="Arial" font-size="18">Öhlins TTX - preview</text>
+</svg>

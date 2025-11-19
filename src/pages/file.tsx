@@ -17,7 +17,7 @@ import {
   Settings,
   ShoppingBag
 } from "lucide-react"
-import FileUploader, { FilePreviewModal } from "@/components/ui/file-uploader"
+import FileUploader from "@/components/ui/file-uploader"
 import { useState, useEffect } from "react"
 
 const fileCategories = [
