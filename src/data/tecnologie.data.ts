@@ -10,8 +10,8 @@ export const tecnologieData = [
     temp_max_c: 850,
     costo_eur: 129.0,
     certificazioni: ['CE'],
-    datasheetUrl: '/documents/schede-tecniche/Brembo_Z04_DataSheet.html',
-    immagini: []
+    datasheetUrl: '/images/prodotti/brembo-z04.svg',
+    immagini: ['/images/prodotti/brembo-z04.svg']
   },
   {
     id: 'T-002',
@@ -38,8 +38,8 @@ export const tecnologieData = [
     temp_max_c: 200,
     costo_eur: 1299.0,
     certificazioni: ['TÜV'],
-    datasheetUrl: '/images/prodotti/ohlins-ttx.svg',
-    immagini: ['/images/prodotti/ohlins-ttx.svg']
+    datasheetUrl: '/images/prodotti/Immagine 2025-11-19 170832.png',
+    immagini: ['/images/prodotti/Immagine 2025-11-19 170832.png']
   }
 ]
 

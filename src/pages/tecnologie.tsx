@@ -15,14 +15,9 @@ export default function TecnologiePage(): React.ReactElement {
   const [previewItem, setPreviewItem] = useState<Tecnologia | null>(null)
   const [openCompare, setOpenCompare] = useState(false)
 
-  const [itemsState, setItemsState] = useState<Tecnologia[]>(() => {
-    try {
-      const raw = localStorage.getItem('tecnologieItems')
-      return raw ? (JSON.parse(raw) as Tecnologia[]) : (tecnologieData as Tecnologia[])
-    } catch {
-      return tecnologieData as Tecnologia[]
-    }
-  })
+  // FOR DEV: force using source data to ensure updated images appear.
+  // This bypasses LocalStorage so the UI shows the current `tecnologie.data` content.
+  const [itemsState, setItemsState] = useState<Tecnologia[]>(tecnologieData as Tecnologia[])
 
   // One-time auto-reset: if we haven't done it yet on this browser, clear
   // any stored `tecnologieItems` and force in-memory data to the source.
@@ -88,9 +83,10 @@ export default function TecnologiePage(): React.ReactElement {
 
   const csvInputRef = useRef<HTMLInputElement | null>(null)
 
-  useEffect(() => {
-    try { localStorage.setItem('tecnologieItems', JSON.stringify(itemsState)) } catch {}
-  }, [itemsState])
+  // Disabled persistence during debugging to avoid stale LocalStorage overriding source data.
+  // useEffect(() => {
+  //   try { localStorage.setItem('tecnologieItems', JSON.stringify(itemsState)) } catch {}
+  // }, [itemsState])
 
   const allTags = useMemo(() => {
     const s = new Set<string>()
@@ -111,12 +107,13 @@ export default function TecnologiePage(): React.ReactElement {
     setCompareIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : (prev.length < 3 ? [...prev, id] : prev))
   }
 
-  const openPreview = (url?: string, item?: any) => {
-    // Prefer the authoritative datasheetUrl from source `tecnologieData` when available.
+  const openPreview = (url?: string, item?: Tecnologia | null) => {
+    // Prefer an explicit url passed by the caller (e.g. TechCard),
+    // otherwise fall back to authoritative datasheetUrl from source `tecnologieData`.
     try {
       if (item && item.id) {
-        const base = (tecnologieData as any).find((t: any) => t.id === item.id)
-        const chosenUrl = base?.datasheetUrl || url
+        const base = (tecnologieData as Tecnologia[]).find((t: Tecnologia) => t.id === item.id)
+        const chosenUrl = url || base?.datasheetUrl
         setPreviewUrl(chosenUrl ?? null)
         // merge base + item so we show the latest fields (base provides new images)
         setPreviewItem({ ...(base || {}), ...(item || {}) })
@@ -189,6 +186,16 @@ export default function TecnologiePage(): React.ReactElement {
           <div className="flex items-center gap-3">
             <Input placeholder="Cerca tecnologia o tag..." value={query} onChange={(e) => setQuery(e.target.value)} className="min-w-[300px]" />
             <Button onClick={() => { setQuery(''); setSelectedTags(null); setCompareIds([]) }}>Reset</Button>
+            <Button variant="outline" onClick={() => {
+              try {
+                localStorage.removeItem('tecnologieItems')
+                setItemsState(tecnologieData as Tecnologia[])
+                alert('Dati ricaricati: cache cancellata')
+              } catch (e) {
+                console.error(e)
+                alert('Errore durante il reset dei dati')
+              }
+            }}>Reset dati</Button>
             <Button onClick={() => setOpenCompare(true)} disabled={compareIds.length < 2}>Confronta ({compareIds.length})</Button>
             <input ref={csvInputRef} id="__csv_input" type="file" accept="text/csv" className="hidden" onChange={(e) => {
               const f = e.target.files?.[0]

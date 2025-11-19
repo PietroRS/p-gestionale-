@@ -41,17 +41,23 @@ export const TechCard = ({ item, onCompareToggle, selected, onOpen }: TechCardPr
         </div>
       </CardHeader>
       <CardContent>
-        {/* If datasheetUrl points to an image, show a small thumbnail */}
-        {item.datasheetUrl && /\.(jpe?g|png|gif|webp|svg)$/i.test(item.datasheetUrl) ? (
-          <div className="mb-3">
-            <img
-              src={item.datasheetUrl}
-              alt={`${item.nome} - anteprima`}
-              className="w-full h-32 object-contain rounded bg-muted/5 cursor-pointer"
-              onClick={() => setShowPreview(true)}
-            />
-          </div>
-        ) : null}
+        {/* If datasheetUrl or first image points to an image, show a small thumbnail */}
+        {(() => {
+          const previewSrc = item.datasheetUrl || item.immagini?.[0]
+          if (previewSrc && /\.(jpe?g|png|gif|webp|svg)$/i.test(previewSrc)) {
+            return (
+              <div className="mb-3">
+                <img
+                  src={previewSrc}
+                  alt={`${item.nome} - anteprima`}
+                  className="w-full h-32 object-contain rounded bg-muted/5 cursor-pointer"
+                  onClick={() => setShowPreview(true)}
+                />
+              </div>
+            )
+          }
+          return null
+        })()}
 
         <p className="text-sm text-muted-foreground mb-3">{item.descrizione}</p>
 
@@ -63,7 +69,7 @@ export const TechCard = ({ item, onCompareToggle, selected, onOpen }: TechCardPr
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" onClick={() => onOpen(item.datasheetUrl, item)}>
+            <Button size="sm" variant="outline" onClick={() => onOpen(item.datasheetUrl || item.immagini?.[0], item)}>
               Scheda tecnica
             </Button>
             <Button size="sm" variant={selected ? 'default' : 'ghost'} onClick={() => onCompareToggle(item.id)}>
@@ -95,7 +101,7 @@ export const TechCard = ({ item, onCompareToggle, selected, onOpen }: TechCardPr
             <div>€ {item.costo_eur.toFixed(2)}</div>
           </div>
           <div className="mt-3 flex justify-end gap-2">
-            <Button size="sm" variant="ghost" onClick={() => { setShowPreview(false); onOpen(item.datasheetUrl, item) }}>Apri</Button>
+            <Button size="sm" variant="ghost" onClick={() => { setShowPreview(false); onOpen(item.datasheetUrl || item.immagini?.[0], item) }}>Apri</Button>
           </div>
         </div>
       ) : null}
