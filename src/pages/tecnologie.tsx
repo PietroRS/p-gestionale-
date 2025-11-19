@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
+import type { Tecnologia } from '@/types/tecnologia'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -6,20 +7,20 @@ import TechCard from '@/components/tech-card'
 import tecnologieData from '@/data/tecnologie.data'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
-export default function TecnologiePage(): JSX.Element {
+export default function TecnologiePage(): React.ReactElement {
   const [query, setQuery] = useState('')
   const [selectedTags, setSelectedTags] = useState<string | null>(null)
   const [compareIds, setCompareIds] = useState<string[]>([])
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [previewItem, setPreviewItem] = useState<any | null>(null)
+  const [previewItem, setPreviewItem] = useState<Tecnologia | null>(null)
   const [openCompare, setOpenCompare] = useState(false)
 
-  const [itemsState, setItemsState] = useState(() => {
+  const [itemsState, setItemsState] = useState<Tecnologia[]>(() => {
     try {
       const raw = localStorage.getItem('tecnologieItems')
-      return raw ? JSON.parse(raw) : tecnologieData
+      return raw ? (JSON.parse(raw) as Tecnologia[]) : (tecnologieData as Tecnologia[])
     } catch {
-      return tecnologieData
+      return tecnologieData as Tecnologia[]
     }
   })
 
@@ -62,16 +63,16 @@ export default function TecnologiePage(): JSX.Element {
     try {
       const raw = localStorage.getItem('tecnologieItems')
       if (!raw) return
-      const stored = JSON.parse(raw)
+      const stored = JSON.parse(raw) as Tecnologia[]
       if (!Array.isArray(stored)) return
-      const map = new Map<string, any>()
-      tecnologieData.forEach((t: any) => map.set(t.id, t))
+      const lookup: Record<string, Tecnologia> = {}
+      ;(tecnologieData as Tecnologia[]).forEach((t: Tecnologia) => { lookup[t.id] = t })
       let changed = false
-      const merged = stored.map((s: any) => {
-        const base = map.get(s.id)
+      const merged = stored.map((s: Tecnologia) => {
+        const base = lookup[s.id]
         if (!base) return s
         // bring missing fields from base into stored item
-        const mergedItem = { ...base, ...s }
+        const mergedItem: Tecnologia = { ...base, ...s }
         if (!s.datasheetUrl && base.datasheetUrl) changed = true
         if ((!s.immagini || s.immagini.length === 0) && (base.immagini && base.immagini.length)) changed = true
         return mergedItem
@@ -93,13 +94,13 @@ export default function TecnologiePage(): JSX.Element {
 
   const allTags = useMemo(() => {
     const s = new Set<string>()
-    itemsState.forEach((t: any) => (t.tag || []).forEach((tg: string) => s.add(tg)))
+    itemsState.forEach((t: Tecnologia) => (t.tag || []).forEach((tg: string) => s.add(tg)))
     return Array.from(s)
   }, [itemsState])
 
   const items = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return itemsState.filter((i: any) => {
+    return itemsState.filter((i: Tecnologia) => {
       if (selectedTags && !((i.tag || []) as string[]).includes(selectedTags)) return false
       if (!q) return true
       return [i.nome, i.categoria, (i.tag || []).join(' '), i.descrizione].join(' ').toLowerCase().includes(q)
@@ -147,7 +148,7 @@ export default function TecnologiePage(): JSX.Element {
         return obj
       })
 
-      const normalized = rows.map((r, idx) => {
+      const normalized = rows.map((r, idx): Tecnologia => {
         const tags = (r.tag || r.tags || '')
           .toString().split(/;|,|\|/).map((s: string) => s.trim()).filter(Boolean)
         return {
@@ -209,7 +210,7 @@ export default function TecnologiePage(): JSX.Element {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {items.map((item: any) => (
+        {items.map((item: Tecnologia) => (
           <TechCard key={item.id} item={item} onCompareToggle={toggleCompare} selected={compareIds.includes(item.id)} onOpen={openPreview} />
         ))}
       </div>
@@ -253,25 +254,25 @@ export default function TecnologiePage(): JSX.Element {
               <thead>
                 <tr>
                   <th className="p-2">Proprietà</th>
-                  {compareIds.map(id => <th key={id} className="p-2">{itemsState.find((t: any) => t.id === id)?.nome}</th>)}
+                  {compareIds.map(id => <th key={id} className="p-2">{itemsState.find((t: Tecnologia) => t.id === id)?.nome}</th>)}
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td className="p-2 font-semibold">Densità (kg/m³)</td>
-                  {compareIds.map(id => <td key={id} className="p-2">{itemsState.find((t: any) => t.id === id)?.densita_kg_m3}</td>)}
+                  {compareIds.map(id => <td key={id} className="p-2">{itemsState.find((t: Tecnologia) => t.id === id)?.densita_kg_m3}</td>)}
                 </tr>
                 <tr>
                   <td className="p-2 font-semibold">Resistenza (MPa)</td>
-                  {compareIds.map(id => <td key={id} className="p-2">{itemsState.find((t: any) => t.id === id)?.resistenza_mpa}</td>)}
+                  {compareIds.map(id => <td key={id} className="p-2">{itemsState.find((t: Tecnologia) => t.id === id)?.resistenza_mpa}</td>)}
                 </tr>
                 <tr>
                   <td className="p-2 font-semibold">Temp. max (°C)</td>
-                  {compareIds.map(id => <td key={id} className="p-2">{itemsState.find((t: any) => t.id === id)?.temp_max_c}</td>)}
+                  {compareIds.map(id => <td key={id} className="p-2">{itemsState.find((t: Tecnologia) => t.id === id)?.temp_max_c}</td>)}
                 </tr>
                 <tr>
                   <td className="p-2 font-semibold">Costo (€)</td>
-                  {compareIds.map(id => <td key={id} className="p-2">€ {(itemsState.find((t: any) => t.id === id)?.costo_eur ?? 0).toFixed(2)}</td>)}
+                  {compareIds.map(id => <td key={id} className="p-2">€ {(itemsState.find((t: Tecnologia) => t.id === id)?.costo_eur ?? 0).toFixed(2)}</td>)}
                 </tr>
               </tbody>
             </table>

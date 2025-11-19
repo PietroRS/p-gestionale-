@@ -1,27 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
+import type { Tecnologia } from '@/types/tecnologia'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
-type Tech = {
-  id: string
-  nome: string
-  categoria: string
-  tag: string[]
-  descrizione: string
-  densita_kg_m3: number
-  resistenza_mpa: number
-  temp_max_c: number
-  costo_eur: number
-  certificazioni: string[]
-  datasheetUrl?: string
-}
-
 type TechCardProps = {
-  item: Tech
+  item: Tecnologia
   onCompareToggle: (id: string) => void
   selected: boolean
-  onOpen: (url?: string, item?: Tech) => void
+  onOpen: (url?: string, item?: Tecnologia) => void
 }
 
 export const TechCard = ({ item, onCompareToggle, selected, onOpen }: TechCardProps) => {
