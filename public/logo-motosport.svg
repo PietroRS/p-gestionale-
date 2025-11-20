@@ -1,36 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="MotoSport logo">
-  <!-- High-contrast logo with neon green border/glow -->
-  <defs>
-    <!-- stronger neon glow: larger blur + duplicate glows + soften -->
-    <filter id="neonGlow" x="-60%" y="-60%" width="220%" height="220%" filterUnits="objectBoundingBox">
-      <!-- bright halo -->
-      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur1" />
-      <!-- wider, softer halo -->
-      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur2" />
-      <!-- combine halos -->
-      <feMerge result="merged">
-        <feMergeNode in="blur2" />
-        <feMergeNode in="blur1" />
-      </feMerge>
-      <!-- increase luminosity for a more fluorescent look -->
-      <feColorMatrix in="merged" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" result="bright" />
-      <feMerge>
-        <feMergeNode in="bright" />
-        <feMergeNode in="SourceGraphic" />
-      </feMerge>
-    </filter>
-  </defs>
-
+  <!-- Simplified logo: removed neon green glow and replaced with subtle neutral ring -->
   <rect width="120" height="120" fill="transparent" />
   <!-- background circle -->
   <circle cx="60" cy="60" r="56" fill="#0f172a" />
 
-  <!-- neon border: inner bright stroke -->
-  <circle cx="60" cy="60" r="52" fill="none" stroke="#39ff14" stroke-width="5" filter="url(#neonGlow)" />
-  <!-- outer neon ring: larger and brighter for strong fluo effect -->
-  <circle cx="60" cy="60" r="58" fill="none" stroke="#39ff14" stroke-width="6" opacity="0.95" filter="url(#neonGlow)" />
-  <!-- subtle extra glow ring to emphasize fluorescence -->
-  <circle cx="60" cy="60" r="64" fill="none" stroke="#39ff14" stroke-width="10" opacity="0.55" filter="url(#neonGlow)" />
+  <!-- subtle neutral border instead of neon glow -->
+  <circle cx="60" cy="60" r="58" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.08" />
 
   <g fill="#ffffff" font-family="Segoe UI, Roboto, Arial, sans-serif" font-weight="700" text-anchor="middle" dominant-baseline="central">
     <text x="60" y="50" font-size="36">MS</text>

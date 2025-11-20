@@ -19,13 +19,15 @@ export const AppSidebar = () => {
     <aside className="flex h-screen w-64 flex-col border-r bg-card">
       {/* Header */}
       <div className="flex items-center gap-3 border-b px-4 py-4">
-        <div className="flex h-10 w-10 items-center justify-center">
+        <div className="flex h-10 w-10 items-center justify-center bg-transparent">
           <img
-            src="/logo-motosport.svg"
+            src="/logo-motosport.svg?v=2"
             alt="Moto Sport Logo"
-            className="h-10 w-10 object-contain"
+            className="h-10 w-10 object-contain bg-transparent"
             style={{
-              filter: 'none'
+              filter: 'none',
+              boxShadow: 'none',
+              background: 'transparent'
             }}
           />
         </div>
