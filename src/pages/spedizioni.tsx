@@ -1,7 +1,10 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Truck, Plus, Edit, Trash2, Clock, Euro, TrendingUp } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 interface OpzioneSpedizione {
   nome: string
@@ -56,6 +59,35 @@ export default function Spedizioni() {
     }
   ])
 
+  // Nuova opzione modal state + form fields
+  const [openNewOpzione, setOpenNewOpzione] = useState<boolean>(false)
+  const [nuovaNome, setNuovaNome] = useState<string>('')
+  const [nuovaDescrizione, setNuovaDescrizione] = useState<string>('')
+  const [nuovaPercentuale, setNuovaPercentuale] = useState<string>('0')
+  const [nuovaGiorni, setNuovaGiorni] = useState<string>('1')
+  const [nuovoOrdine, setNuovoOrdine] = useState<number>(opzioni.length + 1)
+
+  // detect dark mode (for Dialog force)
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    if (typeof document === 'undefined') return false
+    return document.documentElement.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  })
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    const handler = () => setIsDarkMode(document.documentElement.classList.contains('dark') || mq.matches)
+    handler()
+    if (mq.addEventListener) mq.addEventListener('change', handler)
+    else if ((mq as any).addListener) (mq as any).addListener(handler)
+    const obs = new MutationObserver(() => handler())
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    return () => {
+      obs.disconnect()
+      if (mq.removeEventListener) mq.removeEventListener('change', handler)
+      else if ((mq as any).removeListener) (mq as any).removeListener(handler)
+    }
+  }, [])
+
   const totaleOpzioni = opzioni.length
   const opzioniAttive = opzioni.filter(o => o.attiva).length
   const percentualeMin = Math.min(...opzioni.map(o => parseFloat(o.percentuale)))
@@ -91,7 +123,7 @@ export default function Spedizioni() {
               </p>
             </div>
           </div>
-          <Button>
+          <Button onClick={() => { setOpenNewOpzione(true); setNuovoOrdine(opzioni.length + 1) }}>
             <Plus className="mr-2 h-4 w-4" />
             Nuova Opzione
           </Button>
@@ -257,6 +289,61 @@ export default function Spedizioni() {
           </div>
         </CardContent>
       </Card>
+      {/* Nuova Opzione Modal */}
+      <Dialog open={openNewOpzione} onOpenChange={setOpenNewOpzione} forceDark={isDarkMode}>
+        <DialogContent>
+          <DialogHeader onClose={() => setOpenNewOpzione(false)}>
+            <DialogTitle>Nuova Opzione di Spedizione</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm text-muted-foreground mb-1">Nome</label>
+              <Input value={nuovaNome} onChange={(e) => setNuovaNome(e.target.value)} placeholder="Es. Express, Standard..." />
+            </div>
+            <div>
+              <label className="block text-sm text-muted-foreground mb-1">Descrizione</label>
+              <Textarea value={nuovaDescrizione} onChange={(e) => setNuovaDescrizione(e.target.value)} placeholder="Descrizione dell'opzione di spedizione" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm text-muted-foreground mb-1">Percentuale (%)</label>
+                <Input value={nuovaPercentuale} onChange={(e) => setNuovaPercentuale(e.target.value)} />
+              </div>
+              <div>
+                <label className="block text-sm text-muted-foreground mb-1">Giorni Stimati</label>
+                <Input value={nuovaGiorni} onChange={(e) => setNuovaGiorni(e.target.value)} />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm text-muted-foreground mb-1">Ordine</label>
+              <Input type="number" value={nuovoOrdine} onChange={(e) => setNuovoOrdine(Number(e.target.value))} />
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button variant="destructive" className="bg-red-600 hover:bg-red-700 text-white" onClick={() => setOpenNewOpzione(false)}>Annulla</Button>
+              <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={() => {
+                if (!nuovaNome.trim()) return alert('Inserisci un nome per l\'opzione')
+                const percent = Number(nuovaPercentuale) || 0
+                const giorni = nuovaGiorni || '1'
+                const nuovo: OpzioneSpedizione = {
+                  nome: nuovaNome,
+                  descrizione: nuovaDescrizione,
+                  percentuale: percent.toFixed(2) + '%',
+                  giorniStimati: `${giorni} giorni`,
+                  ordine: Number(nuovoOrdine) || (opzioni.length + 1),
+                  attiva: true
+                }
+                setOpzioni(prev => [nuovo, ...prev])
+                setNuovaNome('')
+                setNuovaDescrizione('')
+                setNuovaPercentuale('0')
+                setNuovaGiorni('1')
+                setNuovoOrdine(prev => prev + 1)
+                setOpenNewOpzione(false)
+              }}>Crea Opzione</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

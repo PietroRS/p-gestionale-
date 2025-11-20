@@ -7,10 +7,10 @@ type TechCardProps = {
   item: Tecnologia
   onCompareToggle: (id: string) => void
   selected: boolean
-  onOpen: (url?: string, item?: Tecnologia) => void
+  onOpen?: (url?: string, item?: Tecnologia) => void
 }
 
-export const TechCard = ({ item, onCompareToggle, selected, onOpen }: TechCardProps) => {
+export const TechCard = ({ item, onCompareToggle, selected }: TechCardProps) => {
   const rootRef = useRef<HTMLDivElement | null>(null)
   const [showLocalModal, setShowLocalModal] = useState(false)
 
@@ -81,7 +81,7 @@ export const TechCard = ({ item, onCompareToggle, selected, onOpen }: TechCardPr
           if (previewSrc && isImageUrlLocal(previewSrc)) {
             return (
               <div className="mb-3">
-                <div className="w-full h-44 flex items-center justify-center bg-white/10 dark:bg-slate-900 p-3 rounded-md border border-gray-200 dark:border-gray-700 shadow-sm cursor-pointer" onClick={() => { onOpen(previewSrc, item) }}>
+                <div className="w-full h-44 flex items-center justify-center bg-white/10 dark:bg-slate-900 p-3 rounded-md border border-gray-200 dark:border-gray-700 shadow-sm">
                   <img
                     src={encodeURI(previewSrc)}
                     alt={`${item.nome} - anteprima`}
