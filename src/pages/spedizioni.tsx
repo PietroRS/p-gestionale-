@@ -123,7 +123,7 @@ export default function Spedizioni() {
               </p>
             </div>
           </div>
-          <Button onClick={() => { setOpenNewOpzione(true); setNuovoOrdine(opzioni.length + 1) }}>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => { setOpenNewOpzione(true); setNuovoOrdine(opzioni.length + 1) }}>
             <Plus className="mr-2 h-4 w-4" />
             Nuova Opzione
           </Button>

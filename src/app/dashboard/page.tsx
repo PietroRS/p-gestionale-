@@ -1,7 +1,7 @@
 import { SectionCard } from "@/components/section-cards"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { data } from "@/data.json"
 import { DollarSign, Package, Users, FileText, Eye, Download, Trash2 } from "lucide-react"
 
@@ -36,7 +36,35 @@ export default function DashboardPage() {
     }
   ]
 
-  const [ordini, setOrdini] = useState(ordiniRecenti)
+  const LOCAL_KEY = 'gestionale-ordini'
+
+  // Initialize state from localStorage when available to avoid
+  // overwriting stored data during the first render effects pass.
+  const [ordini, setOrdini] = useState(() => {
+    if (typeof window === 'undefined') return ordiniRecenti
+    try {
+      const raw = localStorage.getItem(LOCAL_KEY)
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (Array.isArray(parsed) && parsed.length) {
+          console.log('[dashboard] init loaded from localStorage, count:', parsed.length)
+          return parsed
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse ordini from localStorage during init', e)
+    }
+    return ordiniRecenti
+  })
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(ordini))
+    } catch (e) {
+      console.warn('Failed to save ordini to localStorage', e)
+    }
+  }, [ordini])
 
   // delete modal state for dashboard items
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
@@ -49,7 +77,16 @@ export default function DashboardPage() {
 
   const handleConfirmDelete = () => {
     if (!deletingItem) return
-    setOrdini(prev => prev.filter(o => o.id !== deletingItem.id))
+    setOrdini(prev => {
+      const next = prev.filter(o => o.id !== deletingItem.id)
+      try {
+        localStorage.setItem('gestionale-ordini', JSON.stringify(next))
+        console.log('[dashboard] saved to localStorage after delete, remaining:', next.length)
+      } catch (e) {
+        console.warn('Failed to save ordini to localStorage after delete', e)
+      }
+      return next
+    })
     setDeleteModalOpen(false)
     setDeletingItem(null)
   }
@@ -68,7 +105,18 @@ export default function DashboardPage() {
               <p className="text-sm text-muted-foreground">Panoramica generale del sistema XYZ</p>
             </div>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">Aggiorna</Button>
+          <Button onClick={() => {
+            try {
+              const raw = localStorage.getItem(LOCAL_KEY)
+              if (raw) {
+                const parsed = JSON.parse(raw)
+                console.log('[dashboard] Aggiorna clicked, loaded count:', Array.isArray(parsed) ? parsed.length : 'invalid')
+                if (Array.isArray(parsed)) setOrdini(parsed)
+              }
+            } catch (e) {
+              console.warn('Failed to reload ordini from localStorage on Aggiorna', e)
+            }
+          }} className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">Aggiorna</Button>
         </CardHeader>
       </Card>
 

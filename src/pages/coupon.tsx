@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tag, Plus, Edit, Trash2, Gift } from "lucide-react"
 import { useState } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from "@/components/ui/badge"
 
 interface Coupon {
@@ -17,6 +18,16 @@ interface Coupon {
 }
 
 export default function CouponPage() {
+  const [openNewCoupon, setOpenNewCoupon] = useState<boolean>(false)
+  const [codice, setCodice] = useState<string>('')
+  const [tipo, setTipo] = useState<string>('Importo Fisso (€)')
+  const [valore, setValore] = useState<string>('')
+  const [minOrdine, setMinOrdine] = useState<string>('0.00')
+  const [scontoMax, setScontoMax] = useState<string>('0.00')
+  const [validoDal, setValidoDal] = useState<string>('')
+  const [validoFino, setValidoFino] = useState<string>('')
+  const [limiteUtilizzi, setLimiteUtilizzi] = useState<string>('')
+  const [couponAttivoToggle, setCouponAttivoToggle] = useState<boolean>(true)
   const [scontoBenvenuto, setScontoBenvenuto] = useState("0,00")
   const [couponAttivi, setCouponAttivi] = useState<Coupon[]>([
     {
@@ -69,7 +80,7 @@ export default function CouponPage() {
               </p>
             </div>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white py-6 px-8 text-base font-semibold">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white py-6 px-8 text-base font-semibold" onClick={() => setOpenNewCoupon(true)}>
             <Plus className="mr-2 h-5 w-5" />
             Nuovo Coupon
           </Button>
@@ -181,6 +192,105 @@ export default function CouponPage() {
           </div>
         </CardContent>
       </Card>
+      {/* Nuovo Coupon Modal */}
+      <Dialog open={openNewCoupon} onOpenChange={setOpenNewCoupon} forceDark={false}>
+        <DialogContent>
+          <DialogHeader onClose={() => setOpenNewCoupon(false)}>
+            <DialogTitle>Nuovo Coupon</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm text-muted-foreground mb-1">Codice <span className="text-destructive">*</span></label>
+              <Input value={codice} onChange={(e) => setCodice(e.target.value)} placeholder="Es. ESTATE2024" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm text-muted-foreground mb-1">Tipo Sconto <span className="text-destructive">*</span></label>
+                <select value={tipo} onChange={(e) => setTipo(e.target.value)} className="flex h-10 w-full rounded-md border border-gray-300 bg-white dark:bg-black px-3 py-2 text-sm text-gray-900 dark:text-white">
+                  <option>Importo Fisso (€)</option>
+                  <option>Percentuale (%)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-muted-foreground mb-1">Valore <span className="text-destructive">*</span></label>
+                <Input value={valore} onChange={(e) => setValore(e.target.value)} placeholder="10.00" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm text-muted-foreground mb-1">Importo Minimo Ordine (€)</label>
+                <Input value={minOrdine} onChange={(e) => setMinOrdine(e.target.value)} placeholder="0.00" />
+              </div>
+              <div>
+                <label className="block text-sm text-muted-foreground mb-1">Sconto Massimo (€) - Non applicabile</label>
+                <Input value={scontoMax} onChange={(e) => setScontoMax(e.target.value)} placeholder="0.00" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm text-muted-foreground mb-1">Valido Dal</label>
+                <Input value={validoDal} onChange={(e) => setValidoDal(e.target.value)} placeholder="gg/mm/aaaa" />
+              </div>
+              <div>
+                <label className="block text-sm text-muted-foreground mb-1">Valido Fino</label>
+                <Input value={validoFino} onChange={(e) => setValidoFino(e.target.value)} placeholder="gg/mm/aaaa" />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm text-muted-foreground mb-1">Limite Utilizzi</label>
+              <Input value={limiteUtilizzi} onChange={(e) => setLimiteUtilizzi(e.target.value)} placeholder="Illimitato" />
+              <p className="text-xs text-muted-foreground mt-1">Lascia vuoto per utilizzi illimitati</p>
+            </div>
+
+            <div className="rounded-lg border p-3 flex items-center justify-between">
+              <div>
+                <div className="font-medium">Coupon Attivo</div>
+                <div className="text-sm text-muted-foreground">Disattiva il coupon per renderlo inutilizzabile</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCouponAttivoToggle(prev => !prev)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${couponAttivoToggle ? 'bg-black' : 'bg-muted'}`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${couponAttivoToggle ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <Button variant="destructive" className="bg-red-600 hover:bg-red-700 text-white" onClick={() => setOpenNewCoupon(false)}>Annulla</Button>
+              <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={() => {
+                // basic validation and add
+                if (!codice.trim()) return alert('Inserisci il codice')
+                const nuovo: Coupon = {
+                  codice,
+                  tipo: tipo === 'Percentuale (%)' ? 'Percentuale' : tipo,
+                  valore: tipo.includes('Percentuale') ? (valore.endsWith('%') ? valore : valore + '%') : valore,
+                  minOrdine: minOrdine ? `€${minOrdine}` : '-',
+                  validoDal: validoDal || '-',
+                  validoFino: validoFino || '-',
+                  utilizzi: limiteUtilizzi ? Number(limiteUtilizzi) : 0,
+                  stato: couponAttivoToggle ? 'Attivo' : 'Inattivo'
+                }
+                setCouponAttivi(prev => [nuovo, ...prev])
+                setOpenNewCoupon(false)
+                // reset
+                setCodice('')
+                setValore('')
+                setMinOrdine('0.00')
+                setScontoMax('0.00')
+                setValidoDal('')
+                setValidoFino('')
+                setLimiteUtilizzi('')
+                setCouponAttivoToggle(true)
+              }}>Crea Coupon</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

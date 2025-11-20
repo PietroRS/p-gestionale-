@@ -82,16 +82,6 @@ export const DialogHeader = ({ children, onClose }: { children?: React.ReactNode
   return (
     <div className="mb-4 flex items-start justify-between">
       <div className="flex-1">{children}</div>
-      {onClose ? (
-        <button
-          type="button"
-          aria-label="Close"
-          onClick={onClose}
-          className="ml-4 inline-flex items-center justify-center rounded px-2 py-1 text-muted-foreground hover:text-foreground hover:bg-muted/10 dark:text-white"
-        >
-          ×
-        </button>
-      ) : null}
     </div>
   )
 }

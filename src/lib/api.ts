@@ -21,15 +21,18 @@ export function uploadFile(file: File, onProgress?: (pct: number) => void): Prom
     fd.append('file', file)
     return client.post('/api/uploads', fd, {
       headers: { 'Content-Type': 'multipart/form-data' },
-      onUploadProgress: (ev: ProgressEvent) => {
-        const pct = Math.round((ev.loaded * 100) / (ev.total || file.size))
+      // axios' progress event typing can differ between versions; accept any here
+      onUploadProgress: (ev: any) => {
+        const loaded = (ev && (ev.loaded ?? ev.loadedBytes)) || 0
+        const total = (ev && (ev.total ?? ev.totalBytes)) || file.size
+        const pct = Math.round((loaded * 100) / (total || file.size))
         onProgress?.(pct)
       }
     }).then(res => res.data)
   }
 
   // simulate upload on client when no backend configured
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let pct = 0
     const interval = setInterval(() => {
       pct = Math.min(100, pct + Math.floor(Math.random() * 20) + 10)

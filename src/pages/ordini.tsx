@@ -40,9 +40,44 @@ const renderPrioritaBadge = (priorita: PrioritaOrdine) => {
   }
 }
 
+// Helper per formattare importo in modo sicuro (accetta number o stringhe come "30,74 €")
+const formatImporto = (value: unknown): string | null => {
+  if (value == null) return null
+  // se è già number
+  if (typeof value === 'number' && !Number.isNaN(value)) return value.toFixed(2)
+  // se è stringa, proviamo a pulire e convertire
+  if (typeof value === 'string') {
+    try {
+      // rimuove simboli di valuta e spazi, sostituisce virgola con punto
+      const cleaned = value.replace(/[^0-9,.-]/g, '').replace(/,/g, '.')
+      const num = parseFloat(cleaned)
+      if (!Number.isNaN(num)) return num.toFixed(2)
+    } catch (e) {
+      // fallthrough
+    }
+  }
+  return null
+}
+
 export default function Ordini() {
-  // Stato locale degli ordini (permette eliminare in locale come nella Dashboard)
-  const [ordini, setOrdini] = React.useState<Ordine[]>(() => [...ordiniData])
+  // Stato locale degli ordini (legge localStorage all'inizializzazione
+  // per evitare che l'effetto di save sovrascriva il contenuto salvato)
+  const [ordini, setOrdini] = React.useState<Ordine[]>(() => {
+    try {
+      if (typeof window === 'undefined') return [...ordiniData]
+      const raw = localStorage.getItem('gestionale-ordini')
+      if (raw) {
+        const parsed = JSON.parse(raw) as Ordine[]
+        if (Array.isArray(parsed) && parsed.length) {
+          console.log('[ordini] init loaded from localStorage, count:', parsed.length)
+          return parsed
+        }
+      }
+    } catch (e) {
+      console.error('Errore parsing ordini da localStorage during init', e)
+    }
+    return [...ordiniData]
+  })
 
   // Calcolo delle statistiche
   const totaleOrdini = ordini.length
@@ -111,9 +146,12 @@ export default function Ordini() {
       {
         key: 'importo',
         header: 'Importo',
-        render: (value) => (
-          <div className="text-sm font-semibold">€ {(value as number).toFixed(2)}</div>
-        )
+        render: (value) => {
+          const formatted = formatImporto(value)
+          return (
+            <div className="text-sm font-semibold">{formatted ? `€ ${formatted}` : <span className="text-muted-foreground">-</span>}</div>
+          )
+        }
       }
     ],
     actions: [
@@ -150,26 +188,21 @@ export default function Ordini() {
 
   const handleConfirmDelete = () => {
     if (!deletingOrder) return
-    setOrdini(prev => prev.filter(o => o.id !== deletingOrder.id))
+    setOrdini(prev => {
+      const next = prev.filter(o => o.id !== deletingOrder.id)
+      try {
+        localStorage.setItem('gestionale-ordini', JSON.stringify(next))
+        console.log('[ordini] saved to localStorage after delete, remaining:', next.length)
+      } catch (e) {
+        console.error('Errore salvataggio ordini su localStorage dopo delete', e)
+      }
+      return next
+    })
     setDeleteModalOpen(false)
     setDeletingOrder(null)
   }
 
   // Persist ordini to localStorage so deletions survive page refresh
-  React.useEffect(() => {
-    try {
-      const raw = localStorage.getItem('gestionale-ordini')
-      if (raw) {
-        const parsed = JSON.parse(raw) as Ordine[]
-        // basic validation
-        if (Array.isArray(parsed)) setOrdini(parsed)
-      }
-    } catch (e) {
-      // ignore parse errors and keep default data
-      console.error('Errore caricamento ordini da localStorage', e)
-    }
-  }, [])
-
   React.useEffect(() => {
     try {
       localStorage.setItem('gestionale-ordini', JSON.stringify(ordini))
@@ -178,15 +211,7 @@ export default function Ordini() {
     }
   }, [ordini])
 
-  // Helper: reset ordini to default (clears localStorage)
-  const resetOrdini = () => {
-    try {
-      localStorage.removeItem('gestionale-ordini')
-    } catch (e) {
-      console.error('Impossibile rimuovere ordini da localStorage', e)
-    }
-    setOrdini([...ordiniData])
-  }
+  // NOTE: resetOrdini removed to avoid accidentally restoring default data
 
   return (
     <div className="p-6 space-y-6">
@@ -202,7 +227,7 @@ export default function Ordini() {
               <p className="text-sm text-muted-foreground">Gestisci tutti gli ordini ricevuti dai clienti</p>
             </div>
           </div>
-          <Button onClick={resetOrdini} className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">Aggiorna</Button>
+          <Button onClick={() => { if (typeof window !== 'undefined') window.location.reload() }} className="bg-blue-600 hover:bg-blue-700 text-white transition-transform duration-150 ease-out transform hover:-translate-y-1 hover:scale-105 hover:shadow-lg">Aggiorna</Button>
         </CardHeader>
       </Card>
 
