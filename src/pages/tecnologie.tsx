@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import type { Tecnologia } from '@/types/tecnologia'
-import { Card, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import TechCard from '@/components/tech-card'
@@ -66,10 +66,16 @@ export default function TecnologiePage(): React.ReactElement {
       const merged = stored.map((s: Tecnologia) => {
         const base = lookup[s.id]
         if (!base) return s
-        // bring missing fields from base into stored item
-        const mergedItem: Tecnologia = { ...base, ...s }
-        if (!s.datasheetUrl && base.datasheetUrl) changed = true
-        if ((!s.immagini || s.immagini.length === 0) && (base.immagini && base.immagini.length)) changed = true
+        // Start from stored item, but ensure key media fields come from base if missing/empty
+        const mergedItem: Tecnologia = { ...s }
+        if ((!s.datasheetUrl || s.datasheetUrl === '') && base.datasheetUrl) {
+          mergedItem.datasheetUrl = base.datasheetUrl
+          changed = true
+        }
+        if ((!s.immagini || s.immagini.length === 0) && base.immagini && base.immagini.length) {
+          mergedItem.immagini = base.immagini
+          changed = true
+        }
         return mergedItem
       })
       if (changed) {
@@ -225,25 +231,46 @@ export default function TecnologiePage(): React.ReactElement {
       {previewUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/60" onClick={() => setPreviewUrl(null)} />
-          <div className="relative w-[90%] h-[90%] bg-card rounded shadow-xl overflow-hidden flex items-center justify-center">
+          <div className="relative w-[90%] h-[90%] bg-card rounded shadow-xl overflow-hidden flex flex-col">
             <button className="absolute right-3 top-3 z-10 p-2 rounded bg-muted/40" onClick={() => setPreviewUrl(null)}>Close</button>
-            <div className="w-full h-full flex flex-col items-center justify-center p-4">
-              {isImageUrl(previewUrl) ? (
-                <img src={previewUrl as string} alt="Anteprima scheda tecnica" className="max-w-full max-h-[70%] object-contain mb-4" />
-              ) : (
-                <iframe src={previewUrl as string} className="w-full h-[70%]" title="Scheda tecnica" />
-              )}
 
+            {/* Media area (top) */}
+            <div className="flex-none h-[65%] flex items-center justify-center bg-black/0 p-4">
+              {isImageUrl(previewUrl) ? (
+                <img src={encodeURI(previewUrl as string)} alt="Anteprima scheda tecnica" className="max-w-full max-h-full object-contain" />
+              ) : (
+                <iframe src={encodeURI(previewUrl as string)} className="w-full h-full" title="Scheda tecnica" />
+              )}
+            </div>
+
+            {/* Readable bottom container */}
+            <div className="flex-1 overflow-auto bg-gradient-to-t from-card/80 via-card/80 to-transparent p-6">
               {previewItem ? (
-                <div className="w-full max-w-3xl bg-muted/5 dark:bg-muted/10 rounded p-3">
-                  <h4 className="text-lg font-semibold mb-2">{previewItem.nome}</h4>
-                  <div className="text-sm grid grid-cols-2 gap-2">
-                    <div>Densità: <strong>{previewItem.densita_kg_m3} kg/m³</strong></div>
-                    <div>Resistenza: <strong>{previewItem.resistenza_mpa} MPa</strong></div>
-                    <div>Temp. max: <strong>{previewItem.temp_max_c} °C</strong></div>
-                    <div>Costo: <strong>€ {Number(previewItem.costo_eur || 0).toFixed(2)}</strong></div>
+                <div className="mx-auto w-full max-w-4xl">
+                  <h4 className="text-xl font-semibold mb-3">{previewItem.nome}</h4>
+                  <div className="w-full grid grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Densità</span>
+                        <span className="font-medium">{previewItem.densita_kg_m3} kg/m³</span>
+                      </div>
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Resistenza</span>
+                        <span className="font-medium">{previewItem.resistenza_mpa} MPa</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Temp. max</span>
+                        <span className="font-medium">{previewItem.temp_max_c} °C</span>
+                      </div>
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Costo</span>
+                        <span className="font-medium">€ {Number(previewItem.costo_eur || 0).toFixed(2)}</span>
+                      </div>
+                    </div>
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground">{previewItem.descrizione}</p>
+                  <p className="mt-3 text-base text-muted-foreground">{previewItem.descrizione}</p>
                 </div>
               ) : null}
             </div>

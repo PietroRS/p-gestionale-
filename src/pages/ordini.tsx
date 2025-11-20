@@ -1,3 +1,4 @@
+import React from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
@@ -40,15 +41,18 @@ const renderPrioritaBadge = (priorita: PrioritaOrdine) => {
 }
 
 export default function Ordini() {
+  // Stato locale degli ordini (permette eliminare in locale come nella Dashboard)
+  const [ordini, setOrdini] = React.useState<Ordine[]>(() => [...ordiniData])
+
   // Calcolo delle statistiche
-  const totaleOrdini = ordiniData.length
-  const ordiniInLavorazione = ordiniData.filter(o => o.stato === StatoOrdine.IN_LAVORAZIONE).length
-  const ordiniCompletati = ordiniData.filter(o => o.stato === StatoOrdine.COMPLETATO).length
-  const valoreTotale = ordiniData.reduce((sum, ord) => sum + ord.importo, 0)
+  const totaleOrdini = ordini.length
+  const ordiniInLavorazione = ordini.filter(o => o.stato === StatoOrdine.IN_LAVORAZIONE).length
+  const ordiniCompletati = ordini.filter(o => o.stato === StatoOrdine.COMPLETATO).length
+  const valoreTotale = ordini.reduce((sum, ord) => sum + ord.importo, 0)
 
   // Configurazione della tabella
   const tableConfig: TableConfig<Ordine> = {
-    data: ordiniData,
+    data: ordini,
     keyExtractor: (row) => row.id,
     searchable: true,
     searchKeys: ['cliente', 'id', 'prodotto', 'email'],
@@ -128,11 +132,60 @@ export default function Ordini() {
       {
         label: 'Elimina',
         icon: <Trash2 className="h-4 w-4 text-red-500" />,
-        onClick: (row) => console.log('Elimina', row),
+        onClick: (row) => openDeleteModal(row as Ordine),
         variant: 'ghost'
       }
     ],
     emptyMessage: 'Nessun ordine trovato'
+  }
+
+  // Delete modal state for orders (similar to Dashboard)
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false)
+  const [deletingOrder, setDeletingOrder] = React.useState<Ordine | null>(null)
+
+  const openDeleteModal = (item: Ordine) => {
+    setDeletingOrder(item)
+    setDeleteModalOpen(true)
+  }
+
+  const handleConfirmDelete = () => {
+    if (!deletingOrder) return
+    setOrdini(prev => prev.filter(o => o.id !== deletingOrder.id))
+    setDeleteModalOpen(false)
+    setDeletingOrder(null)
+  }
+
+  // Persist ordini to localStorage so deletions survive page refresh
+  React.useEffect(() => {
+    try {
+      const raw = localStorage.getItem('gestionale-ordini')
+      if (raw) {
+        const parsed = JSON.parse(raw) as Ordine[]
+        // basic validation
+        if (Array.isArray(parsed)) setOrdini(parsed)
+      }
+    } catch (e) {
+      // ignore parse errors and keep default data
+      console.error('Errore caricamento ordini da localStorage', e)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    try {
+      localStorage.setItem('gestionale-ordini', JSON.stringify(ordini))
+    } catch (e) {
+      console.error('Errore salvataggio ordini su localStorage', e)
+    }
+  }, [ordini])
+
+  // Helper: reset ordini to default (clears localStorage)
+  const resetOrdini = () => {
+    try {
+      localStorage.removeItem('gestionale-ordini')
+    } catch (e) {
+      console.error('Impossibile rimuovere ordini da localStorage', e)
+    }
+    setOrdini([...ordiniData])
   }
 
   return (
@@ -172,6 +225,41 @@ export default function Ordini() {
           <div className="mt-2 text-2xl font-bold">€ {valoreTotale.toFixed(2)}</div>
         </div>
       </div>
+
+      {/* Delete confirmation modal for orders */}
+      {deleteModalOpen && deletingOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/20 dark:bg-black/30"
+            onClick={() => { setDeleteModalOpen(false); setDeletingOrder(null); }}
+          />
+          <div className="relative w-full max-w-md mx-4">
+            <div
+              className="max-w-md rounded-lg border shadow-sm border-gray-200 dark:border-transparent"
+              style={{ backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--card-foreground))' }}
+            >
+              <div className="p-6">
+                <h3 className="text-lg font-semibold">Elimina ordine</h3>
+                <p className="text-sm text-muted-foreground mt-2">Sei sicuro di voler eliminare <strong>{deletingOrder.id}</strong>?</p>
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    onClick={() => { setDeleteModalOpen(false); setDeletingOrder(null) }}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  >
+                    Annulla
+                  </button>
+                  <button
+                    onClick={handleConfirmDelete}
+                    className="px-4 py-2 text-white rounded-lg bg-red-600 hover:bg-red-700 transition-colors"
+                  >
+                    Elimina
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tabella Generica */}
       <GenericTable config={tableConfig} />
