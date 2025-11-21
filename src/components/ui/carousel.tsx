@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type Slide = {
   id?: string
@@ -74,7 +74,13 @@ export default function Carousel({ slides, interval = 5000, className = '' }: Pr
             aria-hidden={index !== i}
             className={`absolute inset-0 transition-opacity duration-700 ${index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
           >
-            <div className="w-full h-full bg-cover bg-center transform transition-transform duration-700" style={{ backgroundImage: `url('${s.image}')`, minHeight: 240, transform: index === i ? 'scale(1.03)' : 'scale(1)' }}>
+            <div className="w-full h-full relative overflow-hidden" style={{ minHeight: 240 }}>
+              <img
+                src={s.image}
+                alt={s.title || s.subtitle || `slide-${i + 1}`}
+                className={`w-full h-full object-cover transition-transform duration-700 ${index === i ? 'scale-105' : 'scale-100'}`}
+                onError={(e) => { const t = e.currentTarget as HTMLImageElement; t.onerror = null; t.src = '/images/wrs/hero.jpg'; }}
+              />
               <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
             </div>
 

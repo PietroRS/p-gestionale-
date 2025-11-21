@@ -10,6 +10,7 @@ import { useCart } from '@/hooks/useCart'
 import MiniCart from '@/components/mini-cart'
 
 // Normalized image names for products and logo
+// Normalized image names for products and logo (use images from public/images/wrs)
 const localImages = [
   '/images/wrs/prod-1.jpg',
   '/images/wrs/prod-2.jpg',
@@ -41,10 +42,11 @@ const products = new Array(15).fill(null).map((_, i) => {
 })
 
 // Carousel slides for the hero
+// Use exactly 3 images for the hero carousel (from `public/images/wrs`)
 const heroSlides = [
   {
     id: 'h1',
-    image: '/images/wrs/hero-custom.jpg',
+    image: '/images/wrs/hero.jpg',
     title: 'WRS — Novità in vetrina',
     subtitle: 'Scopri le ultime novità e gli accessori in evidenza.',
     ctaText: 'Scopri'
@@ -62,13 +64,6 @@ const heroSlides = [
     title: 'Tecnologia e precisione',
     subtitle: 'Componenti di alta qualità per la tua moto.',
     ctaText: 'Scopri'
-  },
-  {
-    id: 'h4',
-    image: '/images/wrs/hero-4.jpg',
-    title: 'Accessori selezionati',
-    subtitle: 'Offerte e prodotti selezionati dal nostro team.',
-    ctaText: 'Acquista ora'
   }
 ]
 
@@ -201,7 +196,8 @@ export default function WrsReplicaPage() {
             >
               {/* fixed ribbon inside card (anchored to Card) */}
               {p.hasDiscount && (
-                <div className="absolute left-2 top-2 z-50 pointer-events-none" style={{ transformOrigin: 'left top', transformBox: 'fill-box' }}>
+                // Use z lower than header (header has z-40) so ribbon does not overlap the navbar when scrolling
+                <div className="absolute left-2 top-2 z-10 pointer-events-none" style={{ transformOrigin: 'left top', transformBox: 'fill-box' }}>
                   <svg className="shadow-lg -rotate-12" width="78" height="30" viewBox="0 0 78 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
                     <rect x="0" y="0" width="78" height="30" rx="4" fill="#d03030" stroke="#fff" strokeWidth="2.5"/>
                     <text x="39" y="20" textAnchor="middle" fontWeight="700" fontSize="11" fill="#fff" fontFamily="sans-serif">BLACK FRIDAY</text>
