@@ -2,6 +2,7 @@ import { Home, Zap, Activity, FolderKanban, Users, FileText, Database, MessageSq
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
+import ResponsiveImage from '@/components/ui/responsive-image'
 
 export const AppSidebar = () => {
   const location = useLocation()
@@ -20,16 +21,7 @@ export const AppSidebar = () => {
       {/* Header */}
       <div className="flex items-center gap-3 border-b px-4 py-4">
         <div className="flex h-10 w-10 items-center justify-center bg-transparent">
-          <img
-            src="/logo-motosport.svg?v=2"
-            alt="Moto Sport Logo"
-            className="h-10 w-10 object-contain bg-transparent"
-            style={{
-              filter: 'none',
-              boxShadow: 'none',
-              background: 'transparent'
-            }}
-          />
+          <ResponsiveImage src="/logo-motosport.svg?v=2" alt="Moto Sport Logo" className="h-10 w-10 object-contain bg-transparent" onErrorSrc="/logo-motosport.svg?v=2" />
         </div>
         <div className="flex flex-col">
           <span className="text-sm font-semibold">MotoSport</span>

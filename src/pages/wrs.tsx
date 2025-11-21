@@ -1,13 +1,14 @@
 import React from "react"
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+// badge not used in this page
 import { Search, ShoppingBag, Star, User, ChevronDown } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import Carousel from '@/components/ui/carousel'
 import { useCart } from '@/hooks/useCart'
 import MiniCart from '@/components/mini-cart'
+import ResponsiveImage from '@/components/ui/responsive-image'
 
 // Normalized image names for products and logo
 // Normalized image names for products and logo (use images from public/images/wrs)
@@ -155,7 +156,7 @@ export default function WrsReplicaPage() {
             {/* logo left */}
             <div className="col-span-2 flex items-center">
               <a href="/wrs" className="flex items-center">
-                <img src="/images/wrs/logo.png" alt="WRS" className="h-10 w-auto" />
+                <ResponsiveImage src="/images/wrs/logo.png" alt="WRS" className="h-10 w-auto" eager onErrorSrc="/images/wrs/logo.png" />
               </a>
             </div>
 
@@ -269,13 +270,12 @@ export default function WrsReplicaPage() {
               <div className="relative bg-white border-b border-neutral-800">
                 <div className="w-full pt-[100%]" />
                 <div className="absolute inset-0 p-2 flex items-center justify-center">
-                  <img
+                  <ResponsiveImage
                     src={p.img}
                     alt={p.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading={i < 3 ? 'eager' : 'lazy'}
-                    decoding="async"
-                    onError={(e) => { const t = e.currentTarget as HTMLImageElement; t.onerror = null; t.src = `/images/wrs/prod-1.jpg`; }}
+                    eager={i < 3}
+                    onErrorSrc={`/images/wrs/prod-1.jpg`}
                   />
                 </div>
               </div>
@@ -300,21 +300,6 @@ export default function WrsReplicaPage() {
                     <Button variant="ghost" size="sm" className="text-white/70 text-sm hover:text-white" aria-label={`Vedi dettagli ${p.title}`}>Dettagli</Button>
                   </div>
                 </div>
-
-              {/* price strip fixed at bottom */}
-              <div className="absolute left-0 right-0 bottom-0 bg-neutral-800 p-2 border-t border-neutral-700 flex items-center justify-between">
-                <div className="text-[11px] text-white/60">Spedizione gratuita*</div>
-                <div className="text-right">
-                  {p.hasDiscount ? (
-                    <div className="flex items-baseline gap-3">
-                      <div className="text-base font-bold text-white">{formatEuro(p.discountedPrice)}</div>
-                      <div className="text-xs text-white/60 line-through">{formatEuro(p.basePrice)}</div>
-                    </div>
-                  ) : (
-                    <div className="text-base font-bold text-white">{formatEuro(p.basePrice)}</div>
-                  )}
-                </div>
-              </div>
 
               {/* price strip fixed at bottom */}
               <div className="absolute left-0 right-0 bottom-0 bg-neutral-800 p-2 border-t border-neutral-700 flex items-center justify-between">
@@ -439,7 +424,7 @@ export default function WrsReplicaPage() {
           <div className="flex items-center gap-6 mt-3 md:mt-0">
             <div className="text-white/70">Scarica la nostra App:</div>
             <div className="flex gap-2 items-center">
-              <img src="/images/wrs/logo.png" alt="appstore" className="h-8 opacity-80" />
+              <ResponsiveImage src="/images/wrs/logo.png" alt="appstore" className="h-8 opacity-80" eager onErrorSrc="/images/wrs/logo.png" />
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ import FilePage from './pages/file'
 import PrezziPage from './pages/prezzi' 
 import SpedizioniPage from './pages/spedizioni'
 import TecnologiePage from './pages/tecnologie'
+import CheckoutPage from './pages/checkout'
 import CouponPage from './pages/coupon'
 import UtentiPage from './pages/utenti'
 import ImpostazioniPage from './pages/impostazioni'
@@ -52,6 +53,10 @@ function App() {
           element={
             <WrsReplicaPage />
           }
+        />
+        <Route
+          path="/checkout"
+          element={<CheckoutPage />}
         />
         <Route
           path="/categoria/:slug"

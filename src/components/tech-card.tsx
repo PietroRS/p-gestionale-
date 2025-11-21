@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
+import ResponsiveImage from '@/components/ui/responsive-image'
 import type { Tecnologia } from '@/types/tecnologia'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -82,10 +83,12 @@ export const TechCard = ({ item, onCompareToggle, selected }: TechCardProps) => 
             return (
               <div className="mb-3">
                 <div className="w-full h-44 flex items-center justify-center bg-white/10 dark:bg-slate-900 p-3 rounded-md border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <img
+                  <ResponsiveImage
                     src={encodeURI(previewSrc)}
                     alt={`${item.nome} - anteprima`}
                     className="max-h-full max-w-full object-contain"
+                    onErrorSrc="/images/wrs/prod-1.jpg"
+                    eager
                   />
                 </div>
               </div>
@@ -133,7 +136,7 @@ export const TechCard = ({ item, onCompareToggle, selected }: TechCardProps) => 
                   <p className={`mb-4 ${isDarkMode ? 'text-white/90' : 'text-black/90'}`}>{item.descrizione}</p>
                   {item.datasheetUrl || item.immagini?.[0] ? (
                     <div className="w-full flex items-center justify-center">
-                      <img src={encodeURI(item.datasheetUrl || item.immagini?.[0] || '')} alt={item.nome} className={`max-w-full max-h-[60vh] object-contain border ${isDarkMode ? 'border-white/20' : 'border-gray-200'}`} />
+                      <ResponsiveImage src={encodeURI(item.datasheetUrl || item.immagini?.[0] || '')} alt={item.nome} className={`max-w-full max-h-[60vh] object-contain border ${isDarkMode ? 'border-white/20' : 'border-gray-200'}`} onErrorSrc="/images/wrs/prod-1.jpg" />
                     </div>
                   ) : null}
                 </div>

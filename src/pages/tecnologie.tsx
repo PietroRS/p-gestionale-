@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import TechCard from '@/components/tech-card'
+import ResponsiveImage from '@/components/ui/responsive-image'
 import tecnologieData from '@/data/tecnologie.data'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
@@ -237,7 +238,7 @@ export default function TecnologiePage(): React.ReactElement {
             {/* Media area (top) */}
             <div className="flex-none h-[65%] flex items-center justify-center bg-black/0 p-4">
               {isImageUrl(previewUrl) ? (
-                <img src={encodeURI(previewUrl as string)} alt="Anteprima scheda tecnica" className="max-w-full max-h-full object-contain" />
+                <ResponsiveImage src={encodeURI(previewUrl as string)} alt="Anteprima scheda tecnica" className="max-w-full max-h-full object-contain" onErrorSrc="/images/wrs/prod-1.jpg" eager />
               ) : (
                 <iframe src={encodeURI(previewUrl as string)} className="w-full h-full" title="Scheda tecnica" />
               )}
