@@ -170,24 +170,12 @@ export default function WrsReplicaPage() {
         </div>
       </header>
 
-      {/* Category chips (racing style) */}
-      <div className="px-6 mt-4">
-          <div className="flex gap-3 overflow-auto py-2">
-          {['Scarichi', 'Freni', 'Elettronica', 'Cupolini', 'Abbigliamento', 'Akrapovic', 'Brembo', 'Novità'].map((c) => {
-            const slug = c.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '')
-            return (
-              <Link key={c} to={`/categoria/${slug}`} className="flex-shrink-0 px-4 py-2 bg-neutral-800 text-white/90 rounded-full text-sm font-semibold border border-neutral-700 hover:bg-red-600 hover:text-white transition">
-                {c}
-              </Link>
-            )
-          })}
-        </div>
-      </div>
+      
 
       {/* Hero carousel */}
       <section className="px-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-          <div className="lg:col-span-2 rounded-lg overflow-hidden relative h-80 md:h-[520px] shadow-2xl border border-neutral-800">
+          <div className="lg:col-span-3 rounded-lg overflow-hidden relative h-80 md:h-[520px] shadow-2xl border border-neutral-800">
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
             <Carousel slides={heroSlides} className="h-80 md:h-[520px] rounded-lg" />
             <div className="absolute left-8 bottom-8 z-20">
