@@ -12,6 +12,7 @@ import CouponPage from './pages/coupon'
 import UtentiPage from './pages/utenti'
 import ImpostazioniPage from './pages/impostazioni'
 import Ordini from './pages/ordini'
+import WrsReplicaPage from './pages/wrs'
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -43,6 +44,12 @@ function App() {
                 <DashboardPage />
               </AppLayout>
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/wrs"
+          element={
+            <WrsReplicaPage />
           }
         />
         
