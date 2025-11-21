@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Truck, Plus, Edit, Trash2, Clock, Euro, TrendingUp } from "lucide-react"
+import { Truck, Plus, Eye, Download, Trash2, Clock, Euro, TrendingUp } from "lucide-react"
 import { useState, useEffect } from "react"
 
 interface OpzioneSpedizione {
@@ -99,12 +99,30 @@ export default function Spedizioni() {
     ))
   }
 
-  const handleEdit = (nome: string) => {
-    console.log("Modifica opzione:", nome)
+  
+
+  // Delete modal state (confirm before deleting) - similar behaviour to Dashboard
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [deletingItem, setDeletingItem] = useState<string | null>(null)
+
+  const openDeleteModal = (nome: string) => {
+    setDeletingItem(nome)
+    setDeleteModalOpen(true)
   }
 
-  const handleDelete = (nome: string) => {
-    setOpzioni(prev => prev.filter(o => o.nome !== nome))
+  const handleConfirmDelete = () => {
+    if (!deletingItem) return
+    setOpzioni(prev => prev.filter(o => o.nome !== deletingItem))
+    setDeleteModalOpen(false)
+    setDeletingItem(null)
+  }
+
+  const handleView = (nome: string) => {
+    console.log("Visualizza opzione:", nome)
+  }
+
+  const handleDownload = (nome: string) => {
+    console.log("Scarica opzione:", nome)
   }
 
   return (
@@ -269,16 +287,25 @@ export default function Spedizioni() {
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
                         <button
-                          onClick={() => handleEdit(opzione.nome)}
-                          className="text-muted-foreground hover:text-foreground"
+                          onClick={() => handleView(opzione.nome)}
+                          className="p-1.5 rounded hover:bg-muted transition-colors"
+                          title="Visualizza"
                         >
-                          <Edit className="h-4 w-4" />
+                          <Eye className="h-4 w-4 text-blue-500" />
                         </button>
                         <button
-                          onClick={() => handleDelete(opzione.nome)}
-                          className="text-muted-foreground hover:text-destructive"
+                          onClick={() => handleDownload(opzione.nome)}
+                          className="p-1.5 rounded hover:bg-muted transition-colors"
+                          title="Scarica"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Download className="h-4 w-4 text-green-500" />
+                        </button>
+                        <button
+                          onClick={() => openDeleteModal(opzione.nome)}
+                          className="p-1.5 rounded hover:bg-muted transition-colors"
+                          title="Elimina"
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
                         </button>
                       </div>
                     </td>
@@ -289,6 +316,41 @@ export default function Spedizioni() {
           </div>
         </CardContent>
       </Card>
+      {/* Delete confirmation modal for shipping options */}
+      {deleteModalOpen && deletingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/20 dark:bg-black/30"
+            onClick={() => { setDeleteModalOpen(false); setDeletingItem(null); }}
+          />
+          <div className="relative w-full max-w-md mx-4">
+            <div
+              className="max-w-md rounded-lg border shadow-sm border-gray-200 dark:border-transparent"
+              style={{ backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--card-foreground))' }}
+            >
+              <div className="p-6">
+                <h3 className="text-lg font-semibold">Elimina opzione</h3>
+                <p className="text-sm text-muted-foreground mt-2">Sei sicuro di voler eliminare <strong>{deletingItem}</strong>?</p>
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    onClick={() => { setDeleteModalOpen(false); setDeletingItem(null) }}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  >
+                    Annulla
+                  </button>
+                  <button
+                    onClick={handleConfirmDelete}
+                    className="px-4 py-2 text-white rounded-lg bg-red-600 hover:bg-red-700 transition-colors"
+                  >
+                    Elimina
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Nuova Opzione Modal */}
       <Dialog open={openNewOpzione} onOpenChange={setOpenNewOpzione} forceDark={isDarkMode}>
         <DialogContent>
