@@ -3,6 +3,12 @@ import { useEffect, useRef, useState } from 'react'
 type Slide = {
   id?: string
   image: string
+  /** optional webp source URL for higher quality / smaller size */
+  webp?: string
+  /** optional srcSet for the img fallback (e.g. 'image@2x.jpg 2x, image-1920w.jpg 1920w') */
+  srcSet?: string
+  /** optional webp srcSet for the webp <source> */
+  webpSrcSet?: string
   title?: string
   subtitle?: string
   ctaText?: string
@@ -19,6 +25,7 @@ export default function Carousel({ slides, interval = 5000, className = '' }: Pr
   const timer = useRef<number | null>(null)
   const paused = useRef(false)
   const slidesCount = slides.length
+  const prevPreload = useRef<HTMLLinkElement | null>(null)
 
   const start = () => {
     if (timer.current || slidesCount <= 1) return
@@ -49,6 +56,43 @@ export default function Carousel({ slides, interval = 5000, className = '' }: Pr
     return () => window.removeEventListener('keydown', onKey)
   })
 
+  // Preload the active slide image (and prefer webp if available) to improve perceived quality
+  useEffect(() => {
+    if (!slides || slides.length === 0) return
+    const s = slides[index]
+    const href = (s.webpSrcSet && typeof s.webpSrcSet === 'string')
+      ? // if webpSrcSet contains multiple entries, take first URL before space
+        String(s.webpSrcSet).split(',')[0].trim().split(' ')[0]
+      : (s.webp || s.image)
+
+    if (!href) return
+
+    try {
+      // remove previous preload if exists
+      if (prevPreload.current) {
+        document.head.removeChild(prevPreload.current)
+        prevPreload.current = null
+      }
+
+      const link = document.createElement('link')
+      link.rel = 'preload'
+      link.as = 'image'
+      link.href = href
+      ;(link as any).fetchPriority = 'high'
+      document.head.appendChild(link)
+      prevPreload.current = link
+    } catch (e) {
+      // ignore
+    }
+
+    return () => {
+      if (prevPreload.current) {
+        try { document.head.removeChild(prevPreload.current) } catch { }
+        prevPreload.current = null
+      }
+    }
+  }, [index, slides])
+
   const prev = () => {
     setIndex((i) => (i - 1 + slidesCount) % slidesCount)
   }
@@ -75,12 +119,25 @@ export default function Carousel({ slides, interval = 5000, className = '' }: Pr
             className={`absolute inset-0 transition-opacity duration-700 ${index === i ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
           >
             <div className="w-full h-full relative overflow-hidden" style={{ minHeight: 240 }}>
-              <img
-                src={s.image}
-                alt={s.title || s.subtitle || `slide-${i + 1}`}
-                className={`w-full h-full object-cover transition-transform duration-700 ${index === i ? 'scale-105' : 'scale-100'}`}
-                onError={(e) => { const t = e.currentTarget as HTMLImageElement; t.onerror = null; t.src = '/images/wrs/hero.jpg'; }}
-              />
+              <picture>
+                {s.webpSrcSet ? (
+                  <source srcSet={s.webpSrcSet} type="image/webp" />
+                ) : s.webp ? (
+                  <source srcSet={s.webp} type="image/webp" />
+                ) : null}
+
+                <img
+                  src={s.image}
+                  srcSet={s.srcSet}
+                  sizes="100vw"
+                  alt={s.title || s.subtitle || `slide-${i + 1}`}
+                  className={`w-full h-full object-cover transition-transform duration-700 ${index === i ? 'scale-105' : 'scale-100'}`}
+                  onError={(e) => { const t = e.currentTarget as HTMLImageElement; t.onerror = null; t.src = '/images/wrs/hero.jpg'; }}
+                  loading={index === i ? 'eager' : 'lazy'}
+                  decoding="async"
+                  fetchPriority={index === i ? 'high' : 'low'}
+                />
+              </picture>
               <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
             </div>
 

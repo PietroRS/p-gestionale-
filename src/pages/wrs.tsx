@@ -42,30 +42,90 @@ const products = new Array(15).fill(null).map((_, i) => {
 })
 
 // Carousel slides for the hero
-// Use exactly 3 images for the hero carousel (from `public/images/wrs`)
-const heroSlides = [
-  {
-    id: 'h1',
-    image: '/images/wrs/hero.jpg',
-    title: 'WRS — Novità in vetrina',
-    subtitle: 'Scopri le ultime novità e gli accessori in evidenza.',
-    ctaText: 'Scopri'
-  },
-  {
-    id: 'h2',
-    image: '/images/wrs/hero-2.jpg',
-    title: 'Performance e stile',
-    subtitle: 'Scarichi e componenti per chi cerca il massimo.',
-    ctaText: 'Vedi prodotti'
-  },
-  {
-    id: 'h3',
-    image: '/images/wrs/hero-3.jpg',
-    title: 'Tecnologia e precisione',
-    subtitle: 'Componenti di alta qualità per la tua moto.',
-    ctaText: 'Scopri'
+// Generate slides from the images available in `public/images/wrs`.
+// Images in `public` are referenced by URL at runtime, so we list the
+// files that should appear in the carousel below. If you want to
+// change which files are shown, update `heroImageFiles`.
+// Use all images from `public/images/wrs` in the carousel and ensure URLs are encoded
+const heroImageFiles = [
+  '/images/wrs/hero.jpg',
+  '/images/wrs/hero-custom.jpg',
+  '/images/wrs/hero-4.jpg',
+  '/images/wrs/hero-3.jpg',
+  '/images/wrs/hero-2.jpg',
+  '/images/wrs/05866_DCP_R12_2024_Action.webp',
+  '/images/wrs/Toprak-Razgatlioglu-6.webp',
+  '/images/wrs/shopping (1).webp',
+  '/images/wrs/rizoma_bss010_nero.jpg',
+  '/images/wrs/prod-6.webp',
+  '/images/wrs/prod-5.jpg',
+  '/images/wrs/prod-4.jpg',
+  '/images/wrs/prod-3.jpg',
+  '/images/wrs/prod-2.jpg',
+  '/images/wrs/prod-1.jpg',
+  '/images/wrs/logo.png',
+].map((p) => encodeURI(p))
+
+// Build slides, preferring .webp variants and building srcSet entries when higher-res
+// siblings are present (e.g. name@2x.png, name-2x.jpg, name-1920w.jpg)
+const availableFiles = heroImageFiles
+
+function findVariants(original: string) {
+  const decoded = decodeURI(original)
+  const base = decoded.replace(/\.[^/.]+$/, '')
+  const ext = decoded.match(/\.[^/.]+$/)?.[0] || ''
+  const candidates: Array<{ url: string; desc: string }> = []
+
+  const patterns: Array<{ suffix: string; desc: string }> = [
+    { suffix: '@2x', desc: '2x' },
+    { suffix: '-2x', desc: '2x' },
+    { suffix: '_2x', desc: '2x' },
+    { suffix: '-large', desc: '2x' },
+    { suffix: '-1920w', desc: '1920w' },
+    { suffix: '-1280w', desc: '1280w' },
+    { suffix: '-1024w', desc: '1024w' },
+  ]
+
+  for (const p of patterns) {
+    const cand = `${base}${p.suffix}${ext}`
+    const enc = encodeURI(cand)
+    if (availableFiles.includes(enc)) candidates.push({ url: enc, desc: p.desc })
   }
-]
+
+  // Also consider a .webp sibling for the same base
+  const webpCand = `${base}.webp`
+  const webpEnc = encodeURI(webpCand)
+  const hasWebp = availableFiles.includes(webpEnc)
+
+  return { variants: candidates, hasWebp, webpEnc }
+}
+
+const heroSlides = heroImageFiles.map((image, idx) => {
+  const decoded = decodeURI(image)
+  const name = decoded.split('/').pop()?.replace(/\.[^/.]+$/, '') || `Slide ${idx + 1}`
+  const title = name.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+
+  const { variants, hasWebp, webpEnc } = findVariants(image)
+
+  const srcSet = variants.map((v) => `${v.url} ${v.desc}`).join(', ') || undefined
+  const webpSrcSet = hasWebp
+    ? // build webp srcset from available webp variants if they exist, otherwise single webp
+      variants.map((v) => `${v.url.replace(/\.[^/.]+$/, '.webp')} ${v.desc}`).filter(Boolean).join(', ') || webpEnc
+    : undefined
+
+  const webp = decoded.endsWith('.webp') ? image : (hasWebp ? webpEnc : undefined)
+
+  return {
+    id: `h${idx + 1}`,
+    image,
+    webp,
+    srcSet,
+    webpSrcSet,
+    title: `WRS — ${title}`,
+    subtitle: '',
+    ctaText: 'Scopri',
+  }
+})
 
 export default function WrsReplicaPage() {
   const cart = useCart()
