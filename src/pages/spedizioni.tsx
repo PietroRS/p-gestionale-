@@ -122,7 +122,16 @@ export default function Spedizioni() {
   }
 
   const handleDownload = (nome: string) => {
-    console.log("Scarica opzione:", nome)
+    // Tentativo semplice: apri la fattura di esempio in public/documents/fatture
+    try {
+      const invoiceUrl = '/documents/fatture/F001234_Ducati.html'
+      // apri in nuova scheda (come le altre pagine fanno per i file)
+      window.open(invoiceUrl, '_blank')
+      alert(`Apertura fattura per ordine relativo a: ${nome}`)
+    } catch (e) {
+      console.error('Errore apertura fattura', e)
+      alert('Impossibile scaricare la fattura al momento')
+    }
   }
 
   return (
