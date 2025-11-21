@@ -13,6 +13,7 @@ import UtentiPage from './pages/utenti'
 import ImpostazioniPage from './pages/impostazioni'
 import Ordini from './pages/ordini'
 import WrsReplicaPage from './pages/wrs'
+import CategoriaPage from './pages/categoria'
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -50,6 +51,12 @@ function App() {
           path="/wrs"
           element={
             <WrsReplicaPage />
+          }
+        />
+        <Route
+          path="/categoria/:slug"
+          element={
+            <CategoriaPage />
           }
         />
         

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Search, ShoppingBag, Star, User, ChevronDown } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import Carousel from '@/components/ui/carousel'
 import { useCart } from '@/hooks/useCart'
@@ -22,7 +23,7 @@ const localImages = [
 const formatEuro = (value: number) =>
   value.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' })
 
-const products = new Array(6).fill(null).map((_, i) => {
+const products = new Array(15).fill(null).map((_, i) => {
   const base = Number((Math.random() * 1200 + 80).toFixed(2))
   const hasDiscount = i % 2 === 0
   const discountPct = hasDiscount ? 20 : 0
@@ -43,23 +44,30 @@ const products = new Array(6).fill(null).map((_, i) => {
 const heroSlides = [
   {
     id: 'h1',
-    image: '/images/wrs/hero.jpg',
-    title: 'WRS — Passione e tecnologia',
-    subtitle: 'Componenti, accessori e supporto tecnico per ogni esigenza. Scopri le novità e le offerte.',
+    image: '/images/wrs/hero-custom.jpg',
+    title: 'WRS — Novità in vetrina',
+    subtitle: 'Scopri le ultime novità e gli accessori in evidenza.',
     ctaText: 'Scopri'
   },
   {
     id: 'h2',
-    image: '/images/wrs/prod-1.jpg',
+    image: '/images/wrs/hero-2.jpg',
     title: 'Performance e stile',
     subtitle: 'Scarichi e componenti per chi cerca il massimo.',
     ctaText: 'Vedi prodotti'
   },
   {
     id: 'h3',
-    image: '/images/wrs/prod-2.jpg',
-    title: 'Sicurezza e qualità',
-    subtitle: 'Freni e componenti testati per la tua sicurezza.',
+    image: '/images/wrs/hero-3.jpg',
+    title: 'Tecnologia e precisione',
+    subtitle: 'Componenti di alta qualità per la tua moto.',
+    ctaText: 'Scopri'
+  },
+  {
+    id: 'h4',
+    image: '/images/wrs/hero-4.jpg',
+    title: 'Accessori selezionati',
+    subtitle: 'Offerte e prodotti selezionati dal nostro team.',
     ctaText: 'Acquista ora'
   }
 ]
@@ -92,33 +100,43 @@ export default function WrsReplicaPage() {
             {/* logo left */}
             <div className="col-span-2 flex items-center">
               <a href="/wrs" className="flex items-center">
-                <img src="/images/wrs/logo.png" alt="WRS" className="h-14 w-auto" />
+                <img src="/images/wrs/logo.png" alt="WRS" className="h-10 w-auto" />
               </a>
             </div>
 
             {/* centered search */}
-            <div className="col-span-8">
-              <div className="max-w-4xl mx-auto">
-                <div className="relative">
-                  <input aria-label="Cerca nel catalogo" className="w-full rounded-none border-2 border-red-600 bg-neutral-900 text-white px-4 py-3 placeholder:text-white/60" placeholder="Cerca nel nostro catalogo" />
-                  <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-red-600 px-3 py-2 text-white rounded">🔍</button>
-                </div>
+            <div className="col-span-7">
+              <div className="max-w-3xl mx-auto">
+                <form onSubmit={(e) => { e.preventDefault(); /* TODO: handle search */ }} className="relative">
+                  <input
+                    aria-label="Cerca nel catalogo"
+                    className="w-full rounded-md border-2 border-red-600 bg-neutral-900 text-white px-4 py-3 placeholder:text-white/40 focus:outline-none focus:ring-4 focus:ring-red-500/25 shadow-sm"
+                    placeholder="Cerca nel nostro catalogo"
+                  />
+                  <button
+                    type="submit"
+                    aria-label="Cerca"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 bg-red-600 w-12 h-10 rounded-md flex items-center justify-center text-white shadow-lg hover:scale-105 transition-transform"
+                  >
+                    <Search className="h-4 w-4" />
+                  </button>
+                </form>
               </div>
             </div>
 
             {/* right partners / trustpilot / account */}
-            <div className="col-span-2 flex items-center justify-end gap-4">
-              <div className="hidden lg:flex items-center gap-3">
-                <img src="/images/wrs/prod-1.jpg" alt="partner1" className="h-8 object-contain" />
-                <img src="/images/wrs/prod-2.jpg" alt="partner2" className="h-8 object-contain" />
-              </div>
+            <div className="col-span-3 flex items-center justify-end gap-4">
+              {/* partner images removed per user request */}
 
-              <div className="hidden md:flex items-center gap-4">
+              <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 text-sm text-white/80">
                   <div className="text-green-400 font-bold">4.9</div>
-                  <div className="hidden lg:inline">Trustpilot</div>
+                  <div className="hidden sm:inline">Trustpilot</div>
                 </div>
-                <a href="#" className="text-white/80 hover:text-white flex items-center gap-2"><User className="h-4 w-4"/> <span className="text-sm">PIETRO ANTONIO</span></a>
+                <a href="#" className="text-white/80 hover:text-white flex items-center gap-2">
+                  <User className="h-4 w-4"/>
+                  <span className="text-sm hidden md:inline">PIETRO ANTONIO</span>
+                </a>
                 <button onClick={() => setCartOpen(true)} className="relative text-white/80 hover:text-white flex items-center gap-2">
                   <ShoppingBag className="h-5 w-5"/>
                   <span className="absolute -top-2 -right-2 bg-red-600 text-xs font-bold px-2 rounded-full">{cart.count}</span>
@@ -137,13 +155,16 @@ export default function WrsReplicaPage() {
         <div className="bg-neutral-900">
           <div className="max-w-7xl mx-auto px-6">
             <nav className="flex items-center gap-4 overflow-auto py-2 text-sm text-white/90">
-              {['Accessori moto','Accessori Scooter','Abbigliamento','Prodotti WRS','Marchi trattati','Novità','Offerte'].map((c) => (
-                <a key={c} href="#" className="flex items-center gap-2 px-4 py-2 hover:bg-neutral-800 rounded">
-                  <span className="text-red-600">🏁</span>
-                  <span className="font-medium">{c}</span>
-                  <ChevronDown className="h-3 w-3 text-white/70" />
-                </a>
-              ))}
+              {['Accessori moto','Accessori Scooter','Abbigliamento','Prodotti WRS','Marchi trattati','Novità','Offerte'].map((c) => {
+                const slug = c.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '')
+                return (
+                  <Link key={c} to={`/categoria/${slug}`} className="flex items-center gap-2 px-4 py-2 hover:bg-neutral-800 rounded">
+                    <span className="text-red-600">🏁</span>
+                    <span className="font-medium">{c}</span>
+                    <ChevronDown className="h-3 w-3 text-white/70" />
+                  </Link>
+                )
+              })}
             </nav>
           </div>
         </div>
@@ -151,20 +172,27 @@ export default function WrsReplicaPage() {
 
       {/* Category chips (racing style) */}
       <div className="px-6 mt-4">
-        <div className="flex gap-3 overflow-auto py-2">
-          {['Scarichi', 'Freni', 'Elettronica', 'Cupolini', 'Abbigliamento', 'Akrapovic', 'Brembo', 'Novità'].map((c) => (
-            <button key={c} className="flex-shrink-0 px-4 py-2 bg-neutral-800 text-white/90 rounded-full text-sm font-semibold border border-neutral-700 hover:bg-red-600 hover:text-white transition">
-              {c}
-            </button>
-          ))}
+          <div className="flex gap-3 overflow-auto py-2">
+          {['Scarichi', 'Freni', 'Elettronica', 'Cupolini', 'Abbigliamento', 'Akrapovic', 'Brembo', 'Novità'].map((c) => {
+            const slug = c.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '')
+            return (
+              <Link key={c} to={`/categoria/${slug}`} className="flex-shrink-0 px-4 py-2 bg-neutral-800 text-white/90 rounded-full text-sm font-semibold border border-neutral-700 hover:bg-red-600 hover:text-white transition">
+                {c}
+              </Link>
+            )
+          })}
         </div>
       </div>
 
       {/* Hero carousel */}
       <section className="px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-          <div className="lg:col-span-2 rounded-lg overflow-hidden relative h-72 md:h-[420px] shadow-xl border border-neutral-800">
-            <Carousel slides={heroSlides} className="h-72 md:h-[420px] rounded-lg" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+          <div className="lg:col-span-2 rounded-lg overflow-hidden relative h-80 md:h-[520px] shadow-2xl border border-neutral-800">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+            <Carousel slides={heroSlides} className="h-80 md:h-[520px] rounded-lg" />
+            <div className="absolute left-8 bottom-8 z-20">
+              <a href="#prodotti" className="bg-red-600 text-white px-4 py-2 rounded-md font-semibold shadow hover:brightness-105">Scopri le offerte</a>
+            </div>
           </div>
           {/* aside removed as requested (spedizione rapida, garanzia, supporto) */}
         </div>
@@ -177,83 +205,103 @@ export default function WrsReplicaPage() {
           <div className="text-sm text-white/70">Visualizza tutto ▸</div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {products.map((p, i) => (
             <Card
               key={p.id}
-              className="group relative overflow-hidden bg-neutral-800 border border-neutral-700 rounded-lg hover:shadow-2xl transition-transform transform hover:-translate-y-1"
+              className="group relative bg-neutral-900 border-2 border-neutral-800 rounded-lg overflow-hidden flex flex-col justify-between hover:shadow-2xl hover:-translate-y-1 transition-transform min-h-[300px]"
             >
-              <div className="relative">
-                {/* badge */}
-                {p.hasDiscount && (
-                  <div className="absolute left-3 top-3 z-10 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded shadow-md">
-                    -{p.discountPct}%
-                  </div>
-                )}
-                {/* new badge */}
-                {i === 0 && (
-                  <div className="absolute right-3 top-3 z-10 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded shadow">New</div>
-                )}
+              {/* fixed ribbon inside card (anchored to Card) */}
+              {p.hasDiscount && (
+                <div className="absolute left-2 top-2 z-50 pointer-events-none" style={{ transformOrigin: 'left top', transformBox: 'fill-box' }}>
+                  <svg className="shadow-lg -rotate-12" width="78" height="30" viewBox="0 0 78 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                    <rect x="0" y="0" width="78" height="30" rx="4" fill="#d03030" stroke="#fff" strokeWidth="2.5"/>
+                    <text x="39" y="20" textAnchor="middle" fontWeight="700" fontSize="11" fill="#fff" fontFamily="sans-serif">BLACK FRIDAY</text>
+                  </svg>
+                </div>
+              )}
 
-                <div className="h-56 bg-neutral-900 rounded-t-lg overflow-hidden border-b border-neutral-700 flex items-center justify-center relative">
+              {/* image area: white square like reference */}
+              <div className="relative bg-white border-b border-neutral-800">
+                <div className="w-full pt-[100%]" />
+                <div className="absolute inset-0 p-2 flex items-center justify-center">
                   <img
                     src={p.img}
                     alt={p.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading={i < 3 ? 'eager' : 'lazy'}
                     decoding="async"
-                    style={{ filter: 'contrast(1.08) saturate(1.14)', transformOrigin: 'center' }}
-                    onError={(e) => {
-                      const target = e.currentTarget as HTMLImageElement
-                      target.onerror = null
-                      target.src = `/images/wrs/prod-1.jpg`
-                    }}
+                    onError={(e) => { const t = e.currentTarget as HTMLImageElement; t.onerror = null; t.src = `/images/wrs/prod-1.jpg`; }}
                   />
-
-                  <div className="absolute inset-0 flex items-end justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-full flex items-center justify-between gap-4 p-3 bg-gradient-to-t from-black/70 to-transparent">
-                      <Button size="sm" className="bg-white text-black">Quick View</Button>
-                      <div className="flex gap-2">
-                        <Button size="sm" className="bg-red-600 text-white">Aggiungi</Button>
-                        <Button variant="ghost" size="sm" className="text-white/80">Dettagli</Button>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
 
-              <CardContent className="bg-neutral-900 text-white rounded-b-lg">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="font-semibold text-base leading-tight">{p.title}</div>
-                    <div className="text-xs text-white/60 mt-1">{p.subtitle}</div>
-                    <div className="flex items-center gap-2 mt-2 text-yellow-400">
-                      <Star className="h-4 w-4" />
-                      <span className="text-sm">4.7</span>
-                      <span className="text-xs text-white/70">(345)</span>
+              <div className="px-3 pt-2 pb-12 flex-1">
+                <div className="text-[11px] text-white/70 uppercase font-semibold leading-tight h-10 overflow-hidden">{p.title}</div>
+                <div className="text-[10px] text-white/60 mt-1 h-5 overflow-hidden">{p.subtitle}</div>
+              </div>
+
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center -space-x-0.5">
+                      {Array.from({ length: 5 }).map((_, idx) => (
+                        <Star key={idx} className="h-3 w-3 text-yellow-400" aria-hidden />
+                      ))}
                     </div>
+                    <span className="text-[12px] text-white/80">4.7</span>
                   </div>
 
-                  <div className="text-right">
-                    {p.hasDiscount ? (
-                      <div>
-                        <div className="text-xs text-white/60 line-through">{formatEuro(p.basePrice)}</div>
-                        <div className="text-lg font-bold text-red-500">{formatEuro(p.discountedPrice)}</div>
-                      </div>
-                    ) : (
-                      <div className="text-lg font-bold">{formatEuro(p.basePrice)}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="text-xs text-white/60">Spedizione gratuita*</div>
                   <div className="flex items-center gap-2">
-                    <Button size="sm" className="bg-red-600 text-white px-3 py-2" onClick={() => cart.add({ id: p.id, title: p.title, price: p.hasDiscount ? p.discountedPrice : p.basePrice, img: p.img })}>Aggiungi</Button>
-                    <Button variant="ghost" size="sm" className="text-white/80">Dettagli</Button>
+                    <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white rounded-md px-3 py-1 shadow-sm text-sm" onClick={() => cart.add({ id: p.id, title: p.title, price: p.hasDiscount ? p.discountedPrice : p.basePrice, img: p.img })} aria-label={`Aggiungi ${p.title} al carrello`}>Aggiungi</Button>
+                    <Button variant="ghost" size="sm" className="text-white/70 text-sm hover:text-white" aria-label={`Vedi dettagli ${p.title}`}>Dettagli</Button>
                   </div>
                 </div>
-              </CardContent>
+
+              {/* price strip fixed at bottom */}
+              <div className="absolute left-0 right-0 bottom-0 bg-neutral-800 p-2 border-t border-neutral-700 flex items-center justify-between">
+                <div className="text-[11px] text-white/60">Spedizione gratuita*</div>
+                <div className="text-right">
+                  {p.hasDiscount ? (
+                    <div className="flex items-baseline gap-3">
+                      <div className="text-base font-bold text-white">{formatEuro(p.discountedPrice)}</div>
+                      <div className="text-xs text-white/60 line-through">{formatEuro(p.basePrice)}</div>
+                    </div>
+                  ) : (
+                    <div className="text-base font-bold text-white">{formatEuro(p.basePrice)}</div>
+                  )}
+                </div>
+              </div>
+
+              {/* price strip fixed at bottom */}
+              <div className="absolute left-0 right-0 bottom-0 bg-neutral-800 p-2 border-t border-neutral-700 flex items-center justify-between">
+                <div className="text-[11px] text-white/60">Spedizione gratuita*</div>
+                <div className="text-right">
+                  {p.hasDiscount ? (
+                    <div className="flex items-baseline gap-3">
+                      <div className="text-base font-bold text-white">{formatEuro(p.discountedPrice)}</div>
+                      <div className="text-xs text-white/60 line-through">{formatEuro(p.basePrice)}</div>
+                    </div>
+                  ) : (
+                    <div className="text-base font-bold text-white">{formatEuro(p.basePrice)}</div>
+                  )}
+                </div>
+              </div>
+
+              {/* action row (placed above the price strip visually) */}
+              <div className="absolute left-0 right-0 bottom-10 px-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center -space-x-0.5">
+                    {Array.from({ length: 5 }).map((_, idx) => (
+                      <Star key={idx} className="h-3 w-3 text-yellow-400" aria-hidden />
+                    ))}
+                  </div>
+                  <span className="text-[12px] text-white/80 ml-2">4.7</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white rounded-md px-3 py-1 shadow-sm text-sm" onClick={() => cart.add({ id: p.id, title: p.title, price: p.hasDiscount ? p.discountedPrice : p.basePrice, img: p.img })} aria-label={`Aggiungi ${p.title} al carrello`}>Aggiungi</Button>
+                  <Button variant="ghost" size="sm" className="text-white/70 text-sm hover:text-white" aria-label={`Vedi dettagli ${p.title}`}>Dettagli</Button>
+                </div>
+              </div>
             </Card>
           ))}
         </div>
@@ -281,9 +329,7 @@ export default function WrsReplicaPage() {
               </div>
             </div>
 
-            <div className="flex justify-end">
-              <img src="/images/wrs/hero.jpg" alt="partner" className="h-16 object-contain opacity-80" />
-            </div>
+            {/* partner image removed per request */}
           </div>
         </div>
 
@@ -351,8 +397,6 @@ export default function WrsReplicaPage() {
             <div className="flex gap-2 items-center">
               <img src="/images/wrs/logo.png" alt="appstore" className="h-8 opacity-80" />
             </div>
-            <div className="text-white/70">In questo sito puoi pagare anche con:</div>
-            <div className="bg-white/90 px-3 py-1 rounded">PayPal</div>
           </div>
         </div>
       </footer>
